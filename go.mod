@@ -1,4 +1,4 @@
-module github.com/spurtcms/form-builders
+module github.com/spurtcms/forms-builders
 
 go 1.22.4
 
