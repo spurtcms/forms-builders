@@ -1,8 +1,6 @@
 package formbuilders
 
 import (
-	"fmt"
-
 	"github.com/spurtcms/auth/migration"
 )
 
@@ -20,23 +18,25 @@ func FormSetup(config Config) *Formbuilders {
 
 }
 
-//FormList 
-func (forms *Formbuilders) FormBuildersList(tenantid int) ([]TblForms, error) {
+// FormList
+func (forms *Formbuilders) FormBuildersList(Limit int, offset int, filter Filter, tenantid int, status int) (formlist []TblForms, count int64, err error) {
 
 	if AuthErr := AuthandPermission(forms); AuthErr != nil {
 
-		return []TblForms{}, AuthErr
+		return []TblForms{}, 0, AuthErr
 	}
 
 	Formsmodel.DataAccess = forms.DataAccess
 
 	Formsmodel.UserId = forms.UserId
 
-	Form, err := Formsmodel.FormsList(forms.DB, tenantid)
+	_, TotalFormsCount, _ := Formsmodel.FormsList(0, 0, filter, forms.DB, tenantid, status)
+
+	Formlist, _, err := Formsmodel.FormsList(offset, Limit, filter, forms.DB, tenantid, status)
 
 	if err != nil {
-		fmt.Println(err)
+		return []TblForms{}, 0, err
 	}
 
-	return Form, nil
+	return Formlist, TotalFormsCount, nil
 }

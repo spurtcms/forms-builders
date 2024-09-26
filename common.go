@@ -15,13 +15,6 @@ var (
 	TenantId, _     = strconv.Atoi(os.Getenv("Tenant_ID"))
 )
 
-type FormModel struct {
-	DataAccess int
-	UserId     int
-}
-
-var Formsmodel FormModel
-
 func AuthandPermission(Forms *Formbuilders) error {
 
 	//check auth enable if enabled, use auth pkg otherwise it will return error

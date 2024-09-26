@@ -1,7 +1,6 @@
 package formbuilders
 
 import (
-	"fmt"
 	"time"
 
 	"gorm.io/gorm"
@@ -39,16 +38,33 @@ type Filter struct {
 	Keyword string
 }
 
+type FormModel struct {
+	DataAccess int
+	UserId     int
+}
+
+var Formsmodel FormModel
+
 // FormList
-func (Formsmodel FormModel) FormsList(DB *gorm.DB, tenantid int) ([]TblForms, error) {
+func (Formsmodel FormModel) FormsList(offset int, limit int, filter Filter, DB *gorm.DB, tenantid int, status int) (Forms []TblForms, Count int64, err error) {
 
-	var Forms []TblForms
+	query := DB.Debug().Table("tbl_forms").
+		Select("tbl_forms.*, tbl_users.username, tbl_users.profile_image_path").
+		Joins("inner join tbl_users on tbl_forms.created_by=tbl_users.id").
+		Where("tbl_forms.is_deleted = 0 and tbl_forms.tenant_id = ? and tbl_forms.status = ?", tenantid, status).
+		Order("tbl_forms.id desc")
 
-	if err := DB.Debug().Table("tbl_forms").Select("tbl_forms.*,tbl_users.username,tbl_users.profile_image_path").Joins("INNER JOIN tbl_users ON tbl_forms.created_by=tbl_users.id").Where("is_deleted=0 and (tbl_forms.tenant_id is NULL or tbl_forms.tenant_id = ?)", tenantid).Find(&Forms).Error; err != nil {
-		return nil, err
+	if filter.Keyword != "" {
+		query = query.Where("Lower(TRIM(form_title)) ILIKE LOWER(TRIM(?))", "%"+filter.Keyword+"%")
 	}
 
-	fmt.Println("Forms:", Forms)
+	if limit != 0 {
+		query.Limit(limit).Offset(offset).Find(&Forms)
 
-	return Forms, nil
+		return Forms, 0, err
+	}
+
+	query.Find(&Forms).Count(&Count)
+
+	return Forms, Count, nil
 }
