@@ -1,6 +1,6 @@
 module github.com/spurtcms/forms-builders
 
-go 1.22.4
+go 1.20
 
 require (
 	github.com/spurtcms/auth v0.0.23
