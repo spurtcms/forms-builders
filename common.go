@@ -10,7 +10,7 @@ import (
 var (
 	ErrorAuth       = errors.New("auth enabled not initialised")
 	ErrorPermission = errors.New("permissions enabled not initialised")
-	ErrorEmpty      = errors.New("given some values is empty")
+	ErrorFormName   = errors.New("given some values is empty")
 	TZONE, _        = time.LoadLocation(os.Getenv("TIME_ZONE"))
 	TenantId, _     = strconv.Atoi(os.Getenv("Tenant_ID"))
 )

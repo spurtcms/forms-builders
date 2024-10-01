@@ -1,6 +1,9 @@
 package formbuilders
 
 import (
+	"strings"
+	"time"
+
 	"github.com/spurtcms/auth/migration"
 )
 
@@ -39,4 +42,66 @@ func (forms *Formbuilders) FormBuildersList(Limit int, offset int, filter Filter
 	}
 
 	return Formlist, TotalFormsCount, nil
+}
+
+//Create functionality
+
+func (forms *Formbuilders) CreateForms(tblform TblForm) error {
+
+	if AuthErr := AuthandPermission(forms); AuthErr != nil {
+
+		return AuthErr
+
+	}
+
+	if tblform.FormTitle == "" {
+		return ErrorFormName
+	}
+	var Forms TblForm
+
+	Forms.FormTitle = tblform.FormTitle
+
+	Forms.FormSlug = strings.ToLower(strings.ReplaceAll(strings.TrimRight(tblform.FormTitle, " "), " ", "-"))
+
+	Forms.FormData = tblform.FormData
+
+	Forms.Status = tblform.Status
+
+	Forms.IsActive = tblform.IsActive
+
+	Forms.CreatedBy = tblform.CreatedBy
+
+	Forms.CreatedOn, _ = time.Parse("2006-01-02 15:04:05", time.Now().UTC().Format("2006-01-02 15:04:05"))
+
+	Forms.TenantId = tblform.TenantId
+
+	err := Formsmodel.CreateForm(&Forms, forms.DB)
+	if err != nil {
+
+		return err
+
+	}
+	return nil
+}
+
+func (forms *Formbuilders) StatusChange(id int, status int, tenantid int) error {
+
+	if AuthErr := AuthandPermission(forms); AuthErr != nil {
+
+		return AuthErr
+
+	}
+	Id := id
+
+	Status := status
+
+	TenantId := tenantid
+
+	err := Formsmodel.ChangeStatus(Id, Status, TenantId, forms.DB)
+	if err != nil {
+
+		return err
+
+	}
+	return nil
 }
