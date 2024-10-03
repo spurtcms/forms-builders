@@ -84,24 +84,111 @@ func (forms *Formbuilders) CreateForms(tblform TblForm) error {
 	return nil
 }
 
-func (forms *Formbuilders) StatusChange(id int, status int, tenantid int) error {
+func (forms *Formbuilders) StatusChange(id int, status int, modifiedby int, tenantid int) error {
 
 	if AuthErr := AuthandPermission(forms); AuthErr != nil {
 
 		return AuthErr
 
 	}
-	Id := id
+	var Forms TblForm
+	Forms.Id = id
 
-	Status := status
+	Forms.Status = status
 
-	TenantId := tenantid
+	Forms.ModifiedBy = modifiedby
 
-	err := Formsmodel.ChangeStatus(Id, Status, TenantId, forms.DB)
+	Forms.ModifiedOn, _ = time.Parse("2006-01-02 15:04:05", time.Now().UTC().Format("2006-01-02 15:04:05"))
+
+	Forms.TenantId = tenantid
+
+	err := Formsmodel.ChangeStatus(&Forms, forms.DB)
 	if err != nil {
 
 		return err
 
 	}
 	return nil
+}
+
+func (forms *Formbuilders) Formdelete(id, deletedby, tenantid int) error {
+
+	if AuthErr := AuthandPermission(forms); AuthErr != nil {
+
+		return AuthErr
+
+	}
+
+	var Forms TblForm
+
+	Forms.Id = id
+
+	Forms.DeletedBy = deletedby
+
+	Forms.DeletedOn, _ = time.Parse("2006-01-02 15:04:05", time.Now().UTC().Format("2006-01-02 15:04:05"))
+
+	Forms.IsDeleted = 1
+
+	Forms.TenantId = tenantid
+
+	err := Formsmodel.FormsDelete(&Forms, forms.DB)
+	if err != nil {
+
+		return err
+
+	}
+	return nil
+}
+
+func (forms *Formbuilders) FormsEdit(id int, TenantId int) (FormList TblForm, err error) {
+
+	if AuthErr := AuthandPermission(forms); AuthErr != nil {
+
+		return TblForm{}, AuthErr
+
+	}
+
+	Forms, err := Formsmodel.EditForm(id, TenantId, forms.DB)
+	if err != nil {
+
+		return TblForm{}, err
+
+	}
+	return Forms, nil
+
+}
+
+func (forms *Formbuilders) UpdateForms(tblforms TblForm, tenantid int) error {
+
+	if AuthErr := AuthandPermission(forms); AuthErr != nil {
+
+		return AuthErr
+
+	}
+	var Forms TblForm
+
+	Forms.Id = tblforms.Id
+
+	Forms.FormTitle = tblforms.FormTitle
+
+	Forms.FormSlug = strings.ToLower(strings.ReplaceAll(strings.TrimRight(tblforms.FormTitle, " "), " ", "-"))
+
+	Forms.FormData = tblforms.FormData
+
+	Forms.Status = tblforms.Status
+
+	Forms.ModifiedBy = tblforms.ModifiedBy
+
+	Forms.ModifiedOn, _ = time.Parse("2006-01-02 15:04:05", time.Now().UTC().Format("2006-01-02 15:04:05"))
+
+	Forms.TenantId = tenantid
+
+	err := Formsmodel.UpdateForm(&Forms, forms.DB)
+	if err != nil {
+
+		return err
+
+	}
+	return nil
+
 }

@@ -40,6 +40,9 @@ type TblForms struct {
 	TenantId         int       `gorm:"type:integer"`
 	Username         string    `gorm:"<-:false"`
 	ProfileImagePath string    `gorm:"<-:false"`
+	NameString       string    `gorm:"<-:false"`
+	FirstName        string    `gorm:"<-:false"`
+	LastName         string    `gorm:"<-:false"`
 	DateString       string    `gorm:"-"`
 }
 
@@ -67,7 +70,7 @@ var Formsmodel FormModel
 func (Formsmodel FormModel) FormsList(offset int, limit int, filter Filter, DB *gorm.DB, tenantid int, status int) (Forms []TblForms, Count int64, err error) {
 
 	query := DB.Debug().Table("tbl_forms").
-		Select("tbl_forms.*, tbl_users.username, tbl_users.profile_image_path").
+		Select("tbl_forms.*, tbl_users.username,tbl_users.first_name,tbl_users.last_name, tbl_users.profile_image_path").
 		Joins("inner join tbl_users on tbl_forms.created_by=tbl_users.id").
 		Where("tbl_forms.is_deleted = 0 and tbl_forms.tenant_id = ? and tbl_forms.status = ?", tenantid, status).
 		Order("tbl_forms.id desc")
@@ -99,12 +102,46 @@ func (Formsmodel FormModel) CreateForm(tblforms *TblForm, DB *gorm.DB) error {
 	return nil
 }
 
-func (Formsmodel FormModel) ChangeStatus(id int, status int, tenantid int, DB *gorm.DB) error {
+func (Formsmodel FormModel) ChangeStatus(forms *TblForm, DB *gorm.DB) error {
 
-	if err := DB.Table("tbl_forms").Where("id=? and tenant_id=?", id, tenantid).UpdateColumns(map[string]interface{}{"status": status}).Error; err != nil {
+	if err := DB.Table("tbl_forms").Where("id=? and tenant_id=?", &forms.Id, &forms.TenantId).UpdateColumns(map[string]interface{}{"status": &forms.Status, "modified_by": &forms.ModifiedBy, "modified_on": &forms.ModifiedOn}).Error; err != nil {
 
 		return err
 
+	}
+
+	return nil
+}
+
+func (Formsmodel FormModel) FormsDelete(forms *TblForm, DB *gorm.DB) error {
+
+	if err := DB.Table("tbl_forms").Where("id=? and tenant_id=?", &forms.Id, &forms.TenantId).UpdateColumns(map[string]interface{}{"is_deleted": &forms.IsDeleted, "deleted_by": &forms.DeletedBy, "deleted_on": &forms.DeletedOn}).Error; err != nil {
+
+		return err
+
+	}
+
+	return nil
+
+}
+
+func (Formsmodel FormModel) EditForm(id int, tenantid int, DB *gorm.DB) (Forms TblForm, err error) {
+
+	if err := DB.Table("tbl_forms").Where("id=? and tenant_id=?", id, tenantid).First(&Forms).Error; err != nil {
+
+		return TblForm{}, err
+
+	}
+
+	return Forms, nil
+
+}
+
+func (Formsmodel FormModel) UpdateForm(tblforms *TblForm, DB *gorm.DB) error {
+
+	if err := DB.Table("tbl_forms").Where("id=? and tenant_id=?", &tblforms.Id, &tblforms.TenantId).UpdateColumns(map[string]interface{}{"form_title": &tblforms.FormTitle, "form_slug": &tblforms.FormSlug, "form_data": &tblforms.FormData, "status": &tblforms.Status, "modified_by": &tblforms.ModifiedBy, "modified_on": &tblforms.ModifiedOn}).Error; err != nil {
+
+		return err
 	}
 
 	return nil

@@ -7,19 +7,20 @@ import (
 )
 
 type TblForms struct {
-	Id         int                    `gorm:"primaryKey;autoIncrement;type:int"`
-	FormTitle  string                 `gorm:"type:varchar(255)"`
-	FormData   map[string]interface{} `gorm:"type:json"`
-	Status     int                    `gorm:"type:int"`
-	IsActive   int                    `gorm:"type:int"`
-	CreatedBy  int                    `gorm:"type:int"`
-	CreatedOn  time.Time              `gorm:"type:timestamp;DEFAULT:NULL"`
-	ModifiedBy int                    `gorm:"type:int;DEFAULT:NULL"`
-	ModifiedOn time.Time              `gorm:"type:timestamp;DEFAULT:NULL"`
-	DeletedBy  int                    `gorm:"type:int;DEFAULT:NULL"`
-	DeletedOn  time.Time              `gorm:"type:timestamp;DEFAULT:NULL"`
-	IsDeleted  int                    `gorm:"type:int;DEFAULT:0"`
-	TenantId   int                    `gorm:"type:int"`
+	Id         int       `gorm:"primaryKey;autoIncrement;type:int"`
+	FormTitle  string    `gorm:"type:varchar(255)"`
+	FormSlug   string    `gorm:"type:varchar(255)"`
+	FormData   string    `gorm:"type:varchar(255)"`
+	Status     int       `gorm:"type:int"`
+	IsActive   int       `gorm:"type:int"`
+	CreatedBy  int       `gorm:"type:int"`
+	CreatedOn  time.Time `gorm:"type:datetime;DEFAULT:NULL"`
+	ModifiedBy int       `gorm:"type:int;DEFAULT:NULL"`
+	ModifiedOn time.Time `gorm:"type:datetime;DEFAULT:NULL"`
+	DeletedBy  int       `gorm:"type:int;DEFAULT:NULL"`
+	DeletedOn  time.Time `gorm:"type:datetime;DEFAULT:NULL"`
+	IsDeleted  int       `gorm:"type:int;DEFAULT:0"`
+	TenantId   int       `gorm:"type:int"`
 }
 
 type TblFormRegistrations struct {
