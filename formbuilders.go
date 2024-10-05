@@ -192,3 +192,58 @@ func (forms *Formbuilders) UpdateForms(tblforms TblForm, tenantid int) error {
 	return nil
 
 }
+
+func (forms *Formbuilders) MultiSelectDeleteForm(formids []int, modifiedby int, tenantid int) error {
+
+	if AuthErr := AuthandPermission(forms); AuthErr != nil {
+
+		return AuthErr
+
+	}
+
+	var Forms TblForm
+
+	Forms.DeletedBy = modifiedby
+
+	Forms.DeletedOn, _ = time.Parse("2006-01-02 15:04:05", time.Now().UTC().Format("2006-01-02 15:04:05"))
+
+	Forms.IsDeleted = 1
+
+	Forms.TenantId = tenantid
+
+	err := Formsmodel.MultiSelectFormDelete(&Forms, formids, forms.DB)
+	if err != nil {
+
+		return err
+
+	}
+	return nil
+}
+
+func (forms *Formbuilders) MultiSelectStatus(formids []int, status int, modifiedby int, tenantid int) error {
+
+	if AuthErr := AuthandPermission(forms); AuthErr != nil {
+
+		return AuthErr
+
+	}
+
+	var Forms TblForm
+
+	Forms.ModifiedBy = modifiedby
+
+	Forms.ModifiedOn, _ = time.Parse("2006-01-02 15:04:05", time.Now().UTC().Format("2006-01-02 15:04:05"))
+
+	Forms.Status = status
+
+	Forms.TenantId = tenantid
+
+	err := Formsmodel.MultiSelectStatusChange(&Forms, formids, forms.DB)
+	if err != nil {
+
+		return err
+
+	}
+	return nil
+
+}

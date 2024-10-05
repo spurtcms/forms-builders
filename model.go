@@ -146,3 +146,25 @@ func (Formsmodel FormModel) UpdateForm(tblforms *TblForm, DB *gorm.DB) error {
 
 	return nil
 }
+
+func (Formsmodel FormModel) MultiSelectFormDelete(forms *TblForm, id []int, DB *gorm.DB) error {
+
+	if err := DB.Debug().Table("tbl_forms").Where("id in (?) and tenant_id=?", id, forms.TenantId).UpdateColumns(map[string]interface{}{"is_deleted": forms.IsDeleted, "deleted_on": forms.DeletedOn, "deleted_by": forms.DeletedBy}).Error; err != nil {
+
+		return err
+	}
+
+	return nil
+
+}
+
+func (Formsmodel FormModel) MultiSelectStatusChange(forms *TblForm, id []int, DB *gorm.DB) error {
+
+	if err := DB.Debug().Table("tbl_forms").Where("id in (?) and tenant_id=?", id, forms.TenantId).UpdateColumns(map[string]interface{}{"status": forms.Status, "modified_on": forms.ModifiedOn, "modified_by": forms.ModifiedBy}).Error; err != nil {
+
+		return err
+	}
+
+	return nil
+
+}
