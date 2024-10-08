@@ -22,11 +22,13 @@ type TblForm struct {
 	DeletedOn  time.Time `gorm:"type:timestamp without time zone;DEFAULT:NULL"`
 	IsDeleted  int       `gorm:"type:integer;DEFAULT:0"`
 	TenantId   int       `gorm:"type:integer"`
+	Uuid       string    `gorm:"type:character varying"`
 }
 
 type TblForms struct {
 	Id               int       `gorm:"primaryKey;auto_increment;type:serial"`
 	FormTitle        string    `gorm:"type:character varying"`
+	FormSlug         string    `gorm:"type:character varying"`
 	FormData         string    `gorm:"type:character varying"`
 	Status           int       `gorm:"type:integer"`
 	IsActive         int       `gorm:"type:integer"`
@@ -38,6 +40,7 @@ type TblForms struct {
 	DeletedOn        time.Time `gorm:"type:timestamp without time zone;DEFAULT:NULL"`
 	IsDeleted        int       `gorm:"type:integer;DEFAULT:0"`
 	TenantId         int       `gorm:"type:integer"`
+	Uuid             string    `gorm:"type:character varying"`
 	Username         string    `gorm:"<-:false"`
 	ProfileImagePath string    `gorm:"<-:false"`
 	NameString       string    `gorm:"<-:false"`
@@ -56,7 +59,9 @@ type TblFormRegistrations struct {
 }
 
 type Filter struct {
-	Keyword string
+	Keyword  string
+	FromDate string
+	ToDate   string
 }
 
 type FormModel struct {
@@ -73,10 +78,14 @@ func (Formsmodel FormModel) FormsList(offset int, limit int, filter Filter, DB *
 		Select("tbl_forms.*, tbl_users.username,tbl_users.first_name,tbl_users.last_name, tbl_users.profile_image_path").
 		Joins("inner join tbl_users on tbl_forms.created_by=tbl_users.id").
 		Where("tbl_forms.is_deleted = 0 and tbl_forms.tenant_id = ? and tbl_forms.status = ?", tenantid, status).
-		Order("tbl_forms.id desc")
+		Order("tbl_forms.modified_on desc")
 
 	if filter.Keyword != "" {
 		query = query.Where("Lower(TRIM(form_title)) ILIKE LOWER(TRIM(?))", "%"+filter.Keyword+"%")
+	}
+
+	if filter.FromDate != "" {
+		query = query.Where("tbl_forms.modified_on >= ? AND tbl_forms.modified_on <= ?", filter.FromDate, filter.ToDate+" 23:59:59")
 	}
 
 	if limit != 0 {

@@ -4,6 +4,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/spurtcms/auth/migration"
 )
 
@@ -59,6 +60,12 @@ func (forms *Formbuilders) CreateForms(tblform TblForm) error {
 	}
 	var Forms TblForm
 
+	uuid := (uuid.New()).String()
+
+	arr := strings.Split(uuid, "-")
+
+	Forms.Uuid = arr[len(arr)-1]
+
 	Forms.FormTitle = tblform.FormTitle
 
 	Forms.FormSlug = strings.ToLower(strings.ReplaceAll(strings.TrimRight(tblform.FormTitle, " "), " ", "-"))
@@ -72,6 +79,8 @@ func (forms *Formbuilders) CreateForms(tblform TblForm) error {
 	Forms.CreatedBy = tblform.CreatedBy
 
 	Forms.CreatedOn, _ = time.Parse("2006-01-02 15:04:05", time.Now().UTC().Format("2006-01-02 15:04:05"))
+
+	Forms.ModifiedOn, _ = time.Parse("2006-01-02 15:04:05", time.Now().UTC().Format("2006-01-02 15:04:05"))
 
 	Forms.TenantId = tblform.TenantId
 
