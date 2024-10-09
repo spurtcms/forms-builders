@@ -256,3 +256,19 @@ func (forms *Formbuilders) MultiSelectStatus(formids []int, status int, modified
 	return nil
 
 }
+
+// Froms Preview
+func (forms *Formbuilders) FormPreview(uuid string) (Form TblForm, err error) {
+
+	if AuthErr := AuthandPermission(forms); AuthErr != nil {
+
+		return TblForm{}, AuthErr
+
+	}
+	var Forms TblForm
+
+	Formsmodel.GetPreview(&Forms, forms.DB, uuid)
+
+	return Forms, nil
+
+}
