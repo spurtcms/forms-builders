@@ -58,6 +58,31 @@ type TblFormRegistrations struct {
 	CreatedOn time.Time `gorm:"type:timestamp without time zone;DEFAULT:NULL"`
 }
 
+type TblFormResponse struct {
+	Id           int       `gorm:"primaryKey;auto_increment;type:serial"`
+	FormId       int       `gorm:"type:integer;"`
+	FormResponse string    `gorm:"type:character varying"`
+	UserId       int       `gorm:"type:integer;"`
+	IsActive     int       `gorm:"type:integer"`
+	IsDeleted    int       `gorm:"type:integer;DEFAULT:0"`
+	CreatedBy    int       `gorm:"type:integer"`
+	CreatedOn    time.Time `gorm:"type:timestamp without time zone;DEFAULT:NULL"`
+	TenantId     int       `gorm:"type:integer"`
+}
+
+type TblFormResponses struct {
+	Id           int       `gorm:"primaryKey;auto_increment;type:serial"`
+	FormId       int       `gorm:"type:integer;"`
+	FormResponse string    `gorm:"type:character varying"`
+	UserId       int       `gorm:"type:integer;"`
+	IsActive     int       `gorm:"type:integer"`
+	IsDeleted    int       `gorm:"type:integer;DEFAULT:0"`
+	CreatedBy    int       `gorm:"type:integer"`
+	CreatedOn    time.Time `gorm:"type:timestamp without time zone;DEFAULT:NULL"`
+	TenantId     int       `gorm:"type:integer"`
+	DateString   string    `gorm:"-"`
+}
+
 type Filter struct {
 	Keyword  string
 	FromDate string
@@ -69,12 +94,17 @@ type FormModel struct {
 	UserId     int
 }
 
+type FormResponseCount struct {
+	ID            int64 `json:"id"`
+	ResponseCount int64 `json:"response_count"`
+}
+
 var Formsmodel FormModel
 
 // FormList
 func (Formsmodel FormModel) FormsList(offset int, limit int, filter Filter, DB *gorm.DB, tenantid int, status int) (Forms []TblForms, Count int64, err error) {
 
-	query := DB.Debug().Table("tbl_forms").
+	query := DB.Table("tbl_forms").
 		Select("tbl_forms.*, tbl_users.username,tbl_users.first_name,tbl_users.last_name, tbl_users.profile_image_path").
 		Joins("inner join tbl_users on tbl_forms.created_by=tbl_users.id").
 		Where("tbl_forms.is_deleted = 0 and tbl_forms.tenant_id = ? and tbl_forms.status = ?", tenantid, status).
@@ -97,6 +127,21 @@ func (Formsmodel FormModel) FormsList(offset int, limit int, filter Filter, DB *
 	query.Find(&Forms).Count(&Count)
 
 	return Forms, Count, nil
+}
+
+// Response count
+
+func (Formsmodel FormModel) ResponseCount(DB *gorm.DB, tenantid int) ([]FormResponseCount, error) {
+	var results []FormResponseCount
+
+	err := DB.Table("tbl_forms").
+		Select("tbl_forms.id, COUNT(tbl_form_responses.id) AS response_count").
+		Joins("INNER JOIN tbl_form_responses ON tbl_form_responses.form_id = tbl_forms.id").
+		Where("tbl_forms.tenant_id = ?", tenantid).
+		Group("tbl_forms.id").
+		Scan(&results).Error
+
+	return results, err
 }
 
 //Create Forms
@@ -158,7 +203,7 @@ func (Formsmodel FormModel) UpdateForm(tblforms *TblForm, DB *gorm.DB) error {
 
 func (Formsmodel FormModel) MultiSelectFormDelete(forms *TblForm, id []int, DB *gorm.DB) error {
 
-	if err := DB.Debug().Table("tbl_forms").Where("id in (?) and tenant_id=?", id, forms.TenantId).UpdateColumns(map[string]interface{}{"is_deleted": forms.IsDeleted, "deleted_on": forms.DeletedOn, "deleted_by": forms.DeletedBy}).Error; err != nil {
+	if err := DB.Table("tbl_forms").Where("id in (?) and tenant_id=?", id, forms.TenantId).UpdateColumns(map[string]interface{}{"is_deleted": forms.IsDeleted, "deleted_on": forms.DeletedOn, "deleted_by": forms.DeletedBy}).Error; err != nil {
 
 		return err
 	}
@@ -169,7 +214,7 @@ func (Formsmodel FormModel) MultiSelectFormDelete(forms *TblForm, id []int, DB *
 
 func (Formsmodel FormModel) MultiSelectStatusChange(forms *TblForm, id []int, DB *gorm.DB) error {
 
-	if err := DB.Debug().Table("tbl_forms").Where("id in (?) and tenant_id=?", id, forms.TenantId).UpdateColumns(map[string]interface{}{"status": forms.Status, "modified_on": forms.ModifiedOn, "modified_by": forms.ModifiedBy}).Error; err != nil {
+	if err := DB.Table("tbl_forms").Where("id in (?) and tenant_id=?", id, forms.TenantId).UpdateColumns(map[string]interface{}{"status": forms.Status, "modified_on": forms.ModifiedOn, "modified_by": forms.ModifiedBy}).Error; err != nil {
 
 		return err
 	}
@@ -181,10 +226,28 @@ func (Formsmodel FormModel) MultiSelectStatusChange(forms *TblForm, id []int, DB
 // Form Preview
 func (Formsmodel FormModel) GetPreview(forms *TblForm, DB *gorm.DB, uuid string) (err error) {
 
-	if err = DB.Debug().Table("tbl_forms").Where("uuid = ?", uuid).Find(&forms).Error; err != nil {
+	if err = DB.Table("tbl_forms").Where("uuid = ?", uuid).Find(&forms).Error; err != nil {
 
 		return err
 	}
 
 	return nil
+}
+
+// Form Response
+func (Formsmodel FormModel) CreateResponse(response *TblFormResponse, DB *gorm.DB) (err error) {
+
+	if err = DB.Table("tbl_form_responses").Create(&response).Error; err != nil {
+
+		return err
+	}
+
+	return nil
+}
+
+func (Formsmodel FormModel) FormResponseList(response *TblFormResponses, DB *gorm.DB) (ResponseList []TblFormResponses, err error) {
+
+	err = DB.Table("tbl_form_responses").Where("form_id=? and user_id=? and tenant_id=?", response.FormId, response.UserId, response.TenantId).Find(&ResponseList).Error
+
+	return ResponseList, err
 }

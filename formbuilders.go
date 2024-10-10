@@ -23,11 +23,11 @@ func FormSetup(config Config) *Formbuilders {
 }
 
 // FormList
-func (forms *Formbuilders) FormBuildersList(Limit int, offset int, filter Filter, tenantid int, status int) (formlist []TblForms, count int64, err error) {
+func (forms *Formbuilders) FormBuildersList(Limit int, offset int, filter Filter, tenantid int, status int) (formlist []TblForms, count int64, ResponseCount []FormResponseCount, err error) {
 
 	if AuthErr := AuthandPermission(forms); AuthErr != nil {
 
-		return []TblForms{}, 0, AuthErr
+		return []TblForms{}, 0, []FormResponseCount{}, AuthErr
 	}
 
 	Formsmodel.DataAccess = forms.DataAccess
@@ -38,11 +38,13 @@ func (forms *Formbuilders) FormBuildersList(Limit int, offset int, filter Filter
 
 	Formlist, _, err := Formsmodel.FormsList(offset, Limit, filter, forms.DB, tenantid, status)
 
+	ResponseCount, _ = Formsmodel.ResponseCount(forms.DB, tenantid)
+
 	if err != nil {
-		return []TblForms{}, 0, err
+		return []TblForms{}, 0, []FormResponseCount{}, err
 	}
 
-	return Formlist, TotalFormsCount, nil
+	return Formlist, TotalFormsCount, ResponseCount, nil
 }
 
 //Create functionality
@@ -258,7 +260,7 @@ func (forms *Formbuilders) MultiSelectStatus(formids []int, status int, modified
 }
 
 // Froms Preview
-func (forms *Formbuilders) FormPreview(uuid string) (Form TblForm, err error) {
+func (forms *Formbuilders) FormPreview(uuid string) (Form TblForm, Err error) {
 
 	if AuthErr := AuthandPermission(forms); AuthErr != nil {
 
@@ -267,8 +269,76 @@ func (forms *Formbuilders) FormPreview(uuid string) (Form TblForm, err error) {
 	}
 	var Forms TblForm
 
-	Formsmodel.GetPreview(&Forms, forms.DB, uuid)
+	err := Formsmodel.GetPreview(&Forms, forms.DB, uuid)
+	if err != nil {
+
+		return Forms, nil
+
+	}
 
 	return Forms, nil
+
+}
+
+func (forms *Formbuilders) CreateFormResponse(response TblFormResponse) error {
+
+	if AuthErr := AuthandPermission(forms); AuthErr != nil {
+
+		return AuthErr
+
+	}
+
+	var Response TblFormResponse
+
+	Response.FormId = response.FormId
+
+	Response.FormResponse = response.FormResponse
+
+	Response.UserId = response.UserId
+
+	Response.IsActive = 1
+
+	Response.IsDeleted = 0
+
+	Response.CreatedBy = response.UserId
+
+	Response.CreatedOn, _ = time.Parse("2006-01-02 15:04:05", time.Now().UTC().Format("2006-01-02 15:04:05"))
+
+	Response.TenantId = response.TenantId
+
+	err := Formsmodel.CreateResponse(&Response, forms.DB)
+	if err != nil {
+
+		return err
+
+	}
+
+	return nil
+}
+
+func (forms *Formbuilders) FormDetailLists(formid, userid, tenantid int) (response []TblFormResponses, err error) {
+
+	if AuthErr := AuthandPermission(forms); AuthErr != nil {
+
+		return []TblFormResponses{}, AuthErr
+
+	}
+
+	var Response TblFormResponses
+
+	Response.FormId = formid
+
+	Response.UserId = userid
+
+	Response.TenantId = tenantid
+
+	responselist, err := Formsmodel.FormResponseList(&Response, forms.DB)
+	if err != nil {
+
+		return []TblFormResponses{}, err
+
+	}
+
+	return responselist, nil
 
 }
