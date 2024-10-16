@@ -47,6 +47,8 @@ type TblForms struct {
 	FirstName        string    `gorm:"<-:false"`
 	LastName         string    `gorm:"<-:false"`
 	DateString       string    `gorm:"-"`
+	CreatedDate      string    `gorm:"-:migration;<-:false"`
+	ModifiedDate     string    `gorm:"-:migration;<-:false"`
 }
 
 type TblFormRegistrations struct {
