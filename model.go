@@ -247,9 +247,37 @@ func (Formsmodel FormModel) CreateResponse(response *TblFormResponse, DB *gorm.D
 	return nil
 }
 
-func (Formsmodel FormModel) FormResponseList(response *TblFormResponses, DB *gorm.DB) (ResponseList []TblFormResponses, err error) {
+func (Formsmodel FormModel) FormResponseList(offset int, limit int, filter Filter, response *TblFormResponses, DB *gorm.DB) (ResponseList []TblFormResponses, Count int64, FormTitle string, err error) {
 
-	err = DB.Table("tbl_form_responses").Where("form_id=? and user_id=? and tenant_id=?", response.FormId, response.UserId, response.TenantId).Find(&ResponseList).Error
+	query := DB.Table("tbl_form_responses").Where("form_id=? and user_id=? and tenant_id=?", response.FormId, response.UserId, response.TenantId).Order("tbl_form_responses.created_on desc")
 
-	return ResponseList, err
+	if filter.Keyword != "" {
+		query = query.Where("Lower(TRIM(form_title)) ILIKE LOWER(TRIM(?))", "%"+filter.Keyword+"%")
+	}
+
+	if filter.FromDate != "" {
+		query = query.Where("tbl_form_responses.created_on >= ? AND tbl_form_responses.created_on <= ?", filter.FromDate, filter.ToDate+" 23:59:59")
+	}
+
+	if limit != 0 {
+		query.Limit(limit).Offset(offset).Find(&ResponseList)
+
+		return ResponseList, 0, "", err
+	}
+
+	err = query.Find(&ResponseList).Count(&Count).Error
+	if err != nil {
+		return nil, 0, "", err
+	}
+
+	var forms TblForm
+
+	if err = DB.Table("tbl_forms").Where("id = ?", response.FormId).First(&forms).Error; err != nil {
+
+		return nil, 0, "", err
+	}
+
+	FormTitle = forms.FormTitle
+
+	return ResponseList, Count, FormTitle, err
 }

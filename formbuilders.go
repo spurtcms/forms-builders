@@ -316,11 +316,11 @@ func (forms *Formbuilders) CreateFormResponse(response TblFormResponse) error {
 	return nil
 }
 
-func (forms *Formbuilders) FormDetailLists(formid, userid, tenantid int) (response []TblFormResponses, err error) {
+func (forms *Formbuilders) FormDetailLists(Limit int, offset int, filter Filter, formid, userid, tenantid int) (response []TblFormResponses, count int64, FormTitle string, err error) {
 
 	if AuthErr := AuthandPermission(forms); AuthErr != nil {
 
-		return []TblFormResponses{}, AuthErr
+		return []TblFormResponses{}, 0, "", AuthErr
 
 	}
 
@@ -332,13 +332,18 @@ func (forms *Formbuilders) FormDetailLists(formid, userid, tenantid int) (respon
 
 	Response.TenantId = tenantid
 
-	responselist, err := Formsmodel.FormResponseList(&Response, forms.DB)
+	_, TotalResponseCount, _, _ := Formsmodel.FormResponseList(0, 0, filter, &Response, forms.DB)
+
+	responselist, _, _, err := Formsmodel.FormResponseList(offset, Limit, filter, &Response, forms.DB)
+
+	_, _, formtitle, _ := Formsmodel.FormResponseList(0, 0, filter, &Response, forms.DB)
+
 	if err != nil {
 
-		return []TblFormResponses{}, err
+		return []TblFormResponses{}, 0, "", err
 
 	}
 
-	return responselist, nil
+	return responselist, TotalResponseCount, formtitle, nil
 
 }
