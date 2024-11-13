@@ -228,7 +228,7 @@ func (Formsmodel FormModel) MultiSelectStatusChange(forms *TblForm, id []int, DB
 // Form Preview
 func (Formsmodel FormModel) GetPreview(forms *TblForm, DB *gorm.DB, uuid string) (err error) {
 
-	if err = DB.Table("tbl_forms").Where("uuid = ?", uuid).Find(&forms).Error; err != nil {
+	if err = DB.Table("tbl_forms").Where("uuid = ? and is_deleted=0", uuid).Find(&forms).Error; err != nil {
 
 		return err
 	}
