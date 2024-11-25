@@ -113,7 +113,7 @@ func (Formsmodel FormModel) FormsList(offset int, limit int, filter Filter, DB *
 		Order("tbl_forms.modified_on desc")
 
 	if filter.Keyword != "" {
-		query = query.Where("Lower(TRIM(form_title)) ILIKE LOWER(TRIM(?))", "%"+filter.Keyword+"%")
+		query = query.Where("Lower(TRIM(form_title)) LIKE LOWER(TRIM(?))", "%"+filter.Keyword+"%")
 	}
 
 	if filter.FromDate != "" {
@@ -130,6 +130,7 @@ func (Formsmodel FormModel) FormsList(offset int, limit int, filter Filter, DB *
 
 	return Forms, Count, nil
 }
+
 
 // Response count
 
@@ -252,7 +253,7 @@ func (Formsmodel FormModel) FormResponseList(offset int, limit int, filter Filte
 	query := DB.Table("tbl_form_responses").Where("form_id=? and user_id=? and tenant_id=?", response.FormId, response.UserId, response.TenantId).Order("tbl_form_responses.created_on desc")
 
 	if filter.Keyword != "" {
-		query = query.Where("Lower(TRIM(form_title)) ILIKE LOWER(TRIM(?))", "%"+filter.Keyword+"%")
+		query = query.Where("Lower(TRIM(form_title)) LIKE LOWER(TRIM(?))", "%"+filter.Keyword+"%")
 	}
 
 	if filter.FromDate != "" {
