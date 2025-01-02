@@ -347,3 +347,25 @@ func (forms *Formbuilders) FormDetailLists(Limit int, offset int, filter Filter,
 	return responselist, TotalResponseCount, formtitle, nil
 
 }
+
+//change cta status
+func (forms *Formbuilders) ChangeFormStatus(id int, isactive int, userid int, tenantid int) (bool, error) {
+
+	autherr := AuthandPermission(forms)
+
+	if autherr != nil {
+
+		return false, autherr
+	}
+
+	var form TblForm
+
+	form.ModifiedBy = userid
+
+	form.ModifiedOn, _ = time.Parse("2006-01-02 15:04:05", time.Now().UTC().Format("2006-01-02 15:04:05"))
+
+	Formsmodel.FormIsActive(&form, id, isactive, forms.DB, tenantid)
+
+	return true, nil
+}
+

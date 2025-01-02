@@ -282,3 +282,14 @@ func (Formsmodel FormModel) FormResponseList(offset int, limit int, filter Filte
 
 	return ResponseList, Count, FormTitle, err
 }
+
+/*Isactive cta*/
+func (Formsmodel FormModel) FormIsActive(tblform *TblForm, id, val int, DB *gorm.DB, tenantid int) error {
+
+	if err := DB.Debug().Table("tbl_forms").Where("id=? and tenant_id=?", id, tenantid).UpdateColumns(map[string]interface{}{"is_active": val, "modified_on": tblform.ModifiedOn, "modified_by": tblform.ModifiedBy}).Error; err != nil {
+
+		return err
+	}
+
+	return nil
+}
