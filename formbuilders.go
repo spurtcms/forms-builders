@@ -348,7 +348,7 @@ func (forms *Formbuilders) FormDetailLists(Limit int, offset int, filter Filter,
 
 }
 
-//change cta status
+// change cta status
 func (forms *Formbuilders) ChangeFormStatus(id int, isactive int, userid int, tenantid int) (bool, error) {
 
 	autherr := AuthandPermission(forms)
@@ -367,5 +367,107 @@ func (forms *Formbuilders) ChangeFormStatus(id int, isactive int, userid int, te
 	Formsmodel.FormIsActive(&form, id, isactive, forms.DB, tenantid)
 
 	return true, nil
+}
+
+//Add to mycollection//
+
+func (forms *Formbuilders) Addctatomycollecton(uid string, tenantid int, userid int) (bool, error) {
+
+	autherr := AuthandPermission(forms)
+
+	if autherr != nil {
+
+		return false, autherr
+	}
+
+	var Forms TblForm
+
+	err := Formsmodel.GetPreview(&Forms, forms.DB, uid)
+	if err != nil {
+
+		return false, nil
+
+	}
+
+	var NewForms TblForm
+
+	uuid := (uuid.New()).String()
+
+	arr := strings.Split(uuid, "-")
+
+	NewForms.Uuid = arr[len(arr)-1]
+
+	NewForms.FormTitle = Forms.FormTitle
+
+	NewForms.FormSlug = strings.ToLower(strings.ReplaceAll(strings.TrimRight(Forms.FormTitle, " "), " ", "-"))
+
+	NewForms.FormData = Forms.FormData
+
+	NewForms.Status = Forms.Status
+
+	NewForms.IsActive = Forms.IsActive
+
+	NewForms.CreatedBy = userid
+
+	NewForms.CreatedOn, _ = time.Parse("2006-01-02 15:04:05", time.Now().UTC().Format("2006-01-02 15:04:05"))
+
+	NewForms.ModifiedOn, _ = time.Parse("2006-01-02 15:04:05", time.Now().UTC().Format("2006-01-02 15:04:05"))
+
+	NewForms.TenantId = tenantid
+
+	NewForms.FormImagePath = Forms.FormImagePath
+
+	NewForms.FormDescription = Forms.FormDescription
+
+	err1 := Formsmodel.CreateForm(&NewForms, forms.DB)
+	if err1 != nil {
+
+		return false, err1
+
+	}
+	return true, nil
+}
+
+func (forms *Formbuilders) Removectatomycollecton(uid string, tenantid int, userid int) (bool, error) {
+
+	autherr := AuthandPermission(forms)
+
+	if autherr != nil {
+
+		return false, autherr
+	}
+	var form TblForm
+
+	form.DeletedBy = userid
+
+	form.DeletedOn, _ = time.Parse("2006-01-02 15:04:05", time.Now().UTC().Format("2006-01-02 15:04:05"))
+
+	err1 := Formsmodel.Removecta(&form, uid, tenantid, forms.DB)
+	if err1 != nil {
+
+		return false, err1
+
+	}
+	return true, nil
+}
+
+func (forms *Formbuilders) GetCtaById(ctaid int) (form TblForm, err error) {
+
+	if AuthErr := AuthandPermission(forms); AuthErr != nil {
+
+		return TblForm{}, AuthErr
+
+	}
+	var Forms TblForm
+
+	err = Formsmodel.GetCtaById(&Forms, forms.DB, ctaid)
+	if err != nil {
+
+		return Forms, nil
+
+	}
+
+	return Forms, nil
+
 }
 
