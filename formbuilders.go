@@ -1,6 +1,7 @@
 package formbuilders
 
 import (
+	"fmt"
 	"strings"
 	"time"
 
@@ -323,7 +324,7 @@ func (forms *Formbuilders) FormDetailLists(Limit int, offset int, filter Filter,
 		return []TblFormResponses{}, 0, "", AuthErr
 
 	}
-
+	fmt.Println("FormResponseList")
 	var Response TblFormResponses
 
 	Response.FormId = formid
@@ -470,4 +471,3 @@ func (forms *Formbuilders) GetCtaById(ctaid int) (form TblForm, err error) {
 	return Forms, nil
 
 }
-

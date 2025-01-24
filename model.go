@@ -1,6 +1,7 @@
 package formbuilders
 
 import (
+	"fmt"
 	"time"
 
 	"gorm.io/gorm"
@@ -265,7 +266,7 @@ func (Formsmodel FormModel) CreateResponse(response *TblFormResponse, DB *gorm.D
 }
 
 func (Formsmodel FormModel) FormResponseList(offset int, limit int, filter Filter, response *TblFormResponses, DB *gorm.DB) (ResponseList []TblFormResponses, Count int64, FormTitle string, err error) {
-
+	fmt.Println("FormResponseList")
 	query := DB.Table("tbl_form_responses").Where("form_id=? and user_id=? and tenant_id=?", response.FormId, response.UserId, response.TenantId).Order("tbl_form_responses.created_on desc")
 
 	if filter.Keyword != "" {
@@ -333,4 +334,3 @@ func (Formsmodel FormModel) GetCtaById(forms *TblForm, DB *gorm.DB, id int) (err
 
 	return nil
 }
-
