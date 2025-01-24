@@ -74,6 +74,7 @@ type TblFormResponse struct {
 	CreatedBy    int       `gorm:"type:integer"`
 	CreatedOn    time.Time `gorm:"type:timestamp without time zone;DEFAULT:NULL"`
 	TenantId     int       `gorm:"type:integer"`
+	EntryId      int       `gorm:"type:integer"`
 }
 
 type TblFormResponses struct {
@@ -87,6 +88,7 @@ type TblFormResponses struct {
 	CreatedOn    time.Time `gorm:"type:timestamp without time zone;DEFAULT:NULL"`
 	TenantId     int       `gorm:"type:integer"`
 	DateString   string    `gorm:"-"`
+	EntryId      int       `gorm:"type:integer"`
 }
 
 type Filter struct {
@@ -151,17 +153,28 @@ func (Formsmodel FormModel) FormsList(offset int, limit int, filter Filter, DB *
 
 // Response count
 
-func (Formsmodel FormModel) ResponseCount(DB *gorm.DB, tenantid int) ([]FormResponseCount, error) {
+func (Formsmodel FormModel) ResponseCount(DB *gorm.DB, tenantid int, entryid int) ([]FormResponseCount, error) {
 	var results []FormResponseCount
 
-	err := DB.Table("tbl_forms").
-		Select("tbl_forms.id, COUNT(tbl_form_responses.id) AS response_count").
-		Joins("INNER JOIN tbl_form_responses ON tbl_form_responses.form_id = tbl_forms.id").
-		Where("tbl_forms.tenant_id = ?", tenantid).
-		Group("tbl_forms.id").
-		Scan(&results).Error
+	if entryid == 0 {
+		err := DB.Table("tbl_forms").
+			Select("tbl_forms.id, COUNT(tbl_form_responses.id) AS response_count").
+			Joins("INNER JOIN tbl_form_responses ON tbl_form_responses.form_id = tbl_forms.id").
+			Where("tbl_forms.tenant_id = ?", tenantid).
+			Group("tbl_forms.id").
+			Scan(&results).Error
 
-	return results, err
+		return results, err
+	} else {
+		err := DB.Table("tbl_channel_entries").
+			Select("tbl_channel_entries.id, COUNT(tbl_form_responses.entry_id) AS response_count").
+			Joins("INNER JOIN tbl_form_responses ON tbl_form_responses.entry_id = tbl_channel_entries.id").
+			Where("tbl_channel_entries.tenant_id = ?", tenantid).
+			Group("tbl_channel_entries.id").
+			Scan(&results).Error
+
+		return results, err
+	}
 }
 
 //Create Forms
@@ -267,8 +280,15 @@ func (Formsmodel FormModel) CreateResponse(response *TblFormResponse, DB *gorm.D
 
 func (Formsmodel FormModel) FormResponseList(offset int, limit int, filter Filter, response *TblFormResponses, DB *gorm.DB) (ResponseList []TblFormResponses, Count int64, FormTitle string, err error) {
 	fmt.Println("FormResponseList")
-	query := DB.Table("tbl_form_responses").Where("form_id=? and user_id=? and tenant_id=?", response.FormId, response.UserId, response.TenantId).Order("tbl_form_responses.created_on desc")
 
+	query := DB.Table("tbl_form_responses")
+	if response.EntryId == 0 {
+		query = query.Where("form_id=? and user_id=? and tenant_id=?", response.FormId, response.UserId, response.TenantId).Order("tbl_form_responses.created_on desc")
+		fmt.Println("wwww:")
+	} else {
+		query = query.Debug().Where("entry_id=? and user_id=? and tenant_id=?", response.EntryId, response.UserId, response.TenantId).Order("tbl_form_responses.created_on desc")
+		fmt.Println("qqqq:")
+	}
 	if filter.Keyword != "" {
 		query = query.Where("Lower(TRIM(form_title)) LIKE LOWER(TRIM(?))", "%"+filter.Keyword+"%")
 	}
@@ -296,6 +316,8 @@ func (Formsmodel FormModel) FormResponseList(offset int, limit int, filter Filte
 	}
 
 	FormTitle = forms.FormTitle
+
+	fmt.Println("Count:", Count)
 
 	return ResponseList, Count, FormTitle, err
 }

@@ -24,7 +24,7 @@ func FormSetup(config Config) *Formbuilders {
 }
 
 // FormList
-func (forms *Formbuilders) FormBuildersList(Limit int, offset int, filter Filter, tenantid int, status int) (formlist []TblForms, count int64, ResponseCount []FormResponseCount, err error) {
+func (forms *Formbuilders) FormBuildersList(Limit int, offset int, filter Filter, tenantid int, status int,entryid int) (formlist []TblForms, count int64, ResponseCount []FormResponseCount, err error) {
 
 	if AuthErr := AuthandPermission(forms); AuthErr != nil {
 
@@ -39,7 +39,7 @@ func (forms *Formbuilders) FormBuildersList(Limit int, offset int, filter Filter
 
 	Formlist, _, err := Formsmodel.FormsList(offset, Limit, filter, forms.DB, tenantid, status)
 
-	ResponseCount, _ = Formsmodel.ResponseCount(forms.DB, tenantid)
+	ResponseCount, _ = Formsmodel.ResponseCount(forms.DB, tenantid,entryid)
 
 	if err != nil {
 		return []TblForms{}, 0, []FormResponseCount{}, err
@@ -307,6 +307,8 @@ func (forms *Formbuilders) CreateFormResponse(response TblFormResponse) error {
 
 	Response.TenantId = response.TenantId
 
+	Response.EntryId=response.EntryId
+
 	err := Formsmodel.CreateResponse(&Response, forms.DB)
 	if err != nil {
 
@@ -317,7 +319,7 @@ func (forms *Formbuilders) CreateFormResponse(response TblFormResponse) error {
 	return nil
 }
 
-func (forms *Formbuilders) FormDetailLists(Limit int, offset int, filter Filter, formid, userid, tenantid int) (response []TblFormResponses, count int64, FormTitle string, err error) {
+func (forms *Formbuilders) FormDetailLists(Limit int, offset int, filter Filter, formid, userid, entryid, tenantid int) (response []TblFormResponses, count int64, FormTitle string, err error) {
 
 	if AuthErr := AuthandPermission(forms); AuthErr != nil {
 
@@ -326,6 +328,8 @@ func (forms *Formbuilders) FormDetailLists(Limit int, offset int, filter Filter,
 	}
 	fmt.Println("FormResponseList")
 	var Response TblFormResponses
+
+	Response.EntryId=entryid
 
 	Response.FormId = formid
 

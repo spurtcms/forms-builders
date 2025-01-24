@@ -72,7 +72,7 @@ func TestFormList(t *testing.T) {
 
 	if permission {
 
-		Formlist, TotalFormsCount, responseCount, err := Forms.FormBuildersList(10, 0, Filter{}, 1, 1)
+		Formlist, TotalFormsCount, responseCount, err := Forms.FormBuildersList(10, 0, Filter{}, 1, 1,0)
 
 		if err != nil {
 			fmt.Println(err)
