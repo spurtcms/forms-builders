@@ -26,6 +26,8 @@ type TblForm struct {
 	Uuid            string    `gorm:"type:character varying"`
 	FormImagePath   string    `gorm:"type:character varying"`
 	FormDescription string    `gorm:"type:character varying"`
+	ChannelId       int       `gorm:"type:integer"`
+	ChannelName     string    `gorm:"type:character varying"`
 }
 
 type TblForms struct {
@@ -54,6 +56,8 @@ type TblForms struct {
 	ModifiedDate     string    `gorm:"-:migration;<-:false"`
 	FormImagePath    string    `gorm:"type:character varying"`
 	FormDescription  string    `gorm:"type:character varying"`
+	ChannelId        int       `gorm:"type:integer"`
+	ChannelName      string    `gorm:"type:character varying"`
 }
 
 type Forms struct {
@@ -110,7 +114,7 @@ type FormResponseCount struct {
 var Formsmodel FormModel
 
 // FormList
-func (Formsmodel FormModel) FormsList(offset int, limit int, filter Filter, DB *gorm.DB, tenantid int, status int) (Forms []TblForms, Count int64, err error) {
+func (Formsmodel FormModel) FormsList(offset int, limit int, filter Filter, DB *gorm.DB, tenantid int, status int, channelid int) (Forms []TblForms, Count int64, err error) {
 
 	query := DB.Debug().Table("tbl_forms").
 		Select("tbl_forms.*, tbl_users.username,tbl_users.first_name,tbl_users.last_name, tbl_users.profile_image_path").
@@ -124,6 +128,10 @@ func (Formsmodel FormModel) FormsList(offset int, limit int, filter Filter, DB *
 	} else {
 
 		query = query.Where("tbl_forms.status=? ", status)
+	}
+
+	if channelid != 0 {
+		query = query.Where("tbl_forms.channel_id=? ", channelid)
 	}
 
 	if tenantid == 0 {
