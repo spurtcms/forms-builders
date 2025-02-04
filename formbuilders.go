@@ -87,6 +87,10 @@ func (forms *Formbuilders) CreateForms(tblform TblForm) error {
 
 	Forms.TenantId = tblform.TenantId
 
+	Forms.ChannelId = tblform.ChannelId
+
+	Forms.ChannelName = tblform.ChannelName
+
 	err := Formsmodel.CreateForm(&Forms, forms.DB)
 	if err != nil {
 
@@ -194,6 +198,10 @@ func (forms *Formbuilders) UpdateForms(tblforms TblForm, tenantid int) error {
 	Forms.ModifiedOn, _ = time.Parse("2006-01-02 15:04:05", time.Now().UTC().Format("2006-01-02 15:04:05"))
 
 	Forms.TenantId = tenantid
+
+	Forms.ChannelId = tblforms.ChannelId
+
+	Forms.ChannelName = tblforms.ChannelName
 
 	err := Formsmodel.UpdateForm(&Forms, forms.DB)
 	if err != nil {
