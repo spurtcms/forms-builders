@@ -2,6 +2,7 @@ package formbuilders
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"gorm.io/gorm"
@@ -26,7 +27,7 @@ type TblForm struct {
 	Uuid            string    `gorm:"type:character varying"`
 	FormImagePath   string    `gorm:"type:character varying"`
 	FormDescription string    `gorm:"type:character varying"`
-	ChannelId       int       `gorm:"type:integer"`
+	ChannelId       string    `gorm:"type:character varying"`
 	ChannelName     string    `gorm:"type:character varying"`
 }
 
@@ -56,7 +57,7 @@ type TblForms struct {
 	ModifiedDate     string    `gorm:"-:migration;<-:false"`
 	FormImagePath    string    `gorm:"type:character varying"`
 	FormDescription  string    `gorm:"type:character varying"`
-	ChannelId        int       `gorm:"type:integer"`
+	ChannelId        string    `gorm:"type:character varying"`
 	ChannelName      string    `gorm:"type:character varying"`
 }
 
@@ -96,9 +97,10 @@ type TblFormResponses struct {
 }
 
 type Filter struct {
-	Keyword  string
-	FromDate string
-	ToDate   string
+	Keyword     string
+	FromDate    string
+	ToDate      string
+	ChannelSlug string
 }
 
 type FormModel struct {
@@ -114,7 +116,7 @@ type FormResponseCount struct {
 var Formsmodel FormModel
 
 // FormList
-func (Formsmodel FormModel) FormsList(offset int, limit int, filter Filter, DB *gorm.DB, tenantid int, status int, channelid int) (Forms []TblForms, Count int64, err error) {
+func (Formsmodel FormModel) FormsList(offset int, limit int, filter Filter, DB *gorm.DB, tenantid int, status int, channelslug string, defaultlist int) (Forms []TblForms, Count int64, err error) {
 
 	query := DB.Debug().Table("tbl_forms").
 		Select("tbl_forms.*, tbl_users.username,tbl_users.first_name,tbl_users.last_name, tbl_users.profile_image_path").
@@ -129,12 +131,14 @@ func (Formsmodel FormModel) FormsList(offset int, limit int, filter Filter, DB *
 
 		query = query.Where("tbl_forms.status=? ", status)
 	}
+	if channelslug != "" {
 
-	if channelid != 0 {
-		query = query.Where("tbl_forms.channel_id=? ", channelid)
+		query = query.Where("string_to_array(LOWER(TRIM(tbl_forms.channel_name)), ',') @> ARRAY[?]::TEXT[]", channelslug)
 	}
 
-	if tenantid == 0 {
+	if defaultlist == 1 {
+
+		
 		query = query.Where("tbl_forms.tenant_id is null")
 	} else {
 
@@ -146,6 +150,10 @@ func (Formsmodel FormModel) FormsList(offset int, limit int, filter Filter, DB *
 
 	if filter.FromDate != "" {
 		query = query.Where("tbl_forms.modified_on >= ? AND tbl_forms.modified_on <= ?", filter.FromDate, filter.ToDate+" 23:59:59")
+	}
+
+	if filter.ChannelSlug != "" {
+		query = query.Where("string_to_array(LOWER(TRIM(tbl_forms.channel_name)), ',') @> ARRAY[?]::TEXT[]", strings.ToLower(strings.TrimSpace(filter.ChannelSlug)))
 	}
 
 	if limit != 0 {
@@ -234,7 +242,7 @@ func (Formsmodel FormModel) EditForm(id int, tenantid int, DB *gorm.DB) (Forms T
 
 func (Formsmodel FormModel) UpdateForm(tblforms *TblForm, DB *gorm.DB) error {
 
-	if err := DB.Table("tbl_forms").Where("id=? and tenant_id=?", &tblforms.Id, &tblforms.TenantId).UpdateColumns(map[string]interface{}{"form_title": &tblforms.FormTitle, "form_slug": &tblforms.FormSlug, "form_data": &tblforms.FormData, "status": &tblforms.Status, "modified_by": &tblforms.ModifiedBy, "modified_on": &tblforms.ModifiedOn, "channel_name":&tblforms.ChannelName,"channel_id":&tblforms.ChannelId}).Error; err != nil {
+	if err := DB.Table("tbl_forms").Where("id=? and tenant_id=?", &tblforms.Id, &tblforms.TenantId).UpdateColumns(map[string]interface{}{"form_title": &tblforms.FormTitle, "form_slug": &tblforms.FormSlug, "form_data": &tblforms.FormData, "status": &tblforms.Status, "modified_by": &tblforms.ModifiedBy, "modified_on": &tblforms.ModifiedOn, "channel_name": &tblforms.ChannelName, "channel_id": &tblforms.ChannelId}).Error; err != nil {
 
 		return err
 	}
@@ -364,3 +372,4 @@ func (Formsmodel FormModel) GetCtaById(forms *TblForm, DB *gorm.DB, id int) (err
 
 	return nil
 }
+

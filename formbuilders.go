@@ -24,7 +24,7 @@ func FormSetup(config Config) *Formbuilders {
 }
 
 // FormList
-func (forms *Formbuilders) FormBuildersList(Limit int, offset int, filter Filter, tenantid int, status int, entryid int, channelid int) (formlist []TblForms, count int64, ResponseCount []FormResponseCount, err error) {
+func (forms *Formbuilders) FormBuildersList(Limit int, offset int, filter Filter, tenantid int, status int, entryid int, channelslug string,defaultlist int) (formlist []TblForms, count int64, ResponseCount []FormResponseCount, err error) {
 
 	if AuthErr := AuthandPermission(forms); AuthErr != nil {
 
@@ -35,9 +35,9 @@ func (forms *Formbuilders) FormBuildersList(Limit int, offset int, filter Filter
 
 	Formsmodel.UserId = forms.UserId
 
-	_, TotalFormsCount, _ := Formsmodel.FormsList(0, 0, filter, forms.DB, tenantid, status, channelid)
+	_, TotalFormsCount, _ := Formsmodel.FormsList(0, 0, filter, forms.DB, tenantid, status, channelslug,defaultlist)
 
-	Formlist, _, err := Formsmodel.FormsList(offset, Limit, filter, forms.DB, tenantid, status, channelid)
+	Formlist, _, err := Formsmodel.FormsList(offset, Limit, filter, forms.DB, tenantid, status, channelslug,defaultlist)
 
 	ResponseCount, _ = Formsmodel.ResponseCount(forms.DB, tenantid, entryid)
 
@@ -384,7 +384,7 @@ func (forms *Formbuilders) ChangeFormStatus(id int, isactive int, userid int, te
 
 //Add to mycollection//
 
-func (forms *Formbuilders) Addctatomycollecton(uid string, tenantid int, userid int, channelid int) (bool, error) {
+func (forms *Formbuilders) Addctatomycollecton(uid string, tenantid int, userid int, channelid string) (bool, error) {
 
 	autherr := AuthandPermission(forms)
 
@@ -487,3 +487,4 @@ func (forms *Formbuilders) GetCtaById(ctaid int) (form TblForm, err error) {
 	return Forms, nil
 
 }
+
