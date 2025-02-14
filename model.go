@@ -59,6 +59,7 @@ type TblForms struct {
 	FormDescription  string    `gorm:"type:character varying"`
 	ChannelId        string    `gorm:"type:character varying"`
 	ChannelName      string    `gorm:"type:character varying"`
+	Channelnamearr   []string  `gorm:"-"`
 }
 
 type Forms struct {
@@ -138,7 +139,6 @@ func (Formsmodel FormModel) FormsList(offset int, limit int, filter Filter, DB *
 
 	if defaultlist == 1 {
 
-		
 		query = query.Where("tbl_forms.tenant_id is null")
 	} else {
 
@@ -196,6 +196,7 @@ func (Formsmodel FormModel) ResponseCount(DB *gorm.DB, tenantid int, entryid int
 //Create Forms
 
 func (Formsmodel FormModel) CreateForm(tblforms *TblForm, DB *gorm.DB) error {
+	fmt.Println("makeprint")
 
 	if err := DB.Debug().Table("tbl_forms").Create(&tblforms).Error; err != nil {
 
