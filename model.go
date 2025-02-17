@@ -29,6 +29,8 @@ type TblForm struct {
 	FormDescription string    `gorm:"type:character varying"`
 	ChannelId       string    `gorm:"type:character varying"`
 	ChannelName     string    `gorm:"type:character varying"`
+	FormPreviewImagepath string    `gorm:"type:character varying"`
+	FormPreviewImagename string    `gorm:"type:character varying"`
 }
 
 type TblForms struct {
@@ -60,6 +62,8 @@ type TblForms struct {
 	ChannelId        string    `gorm:"type:character varying"`
 	ChannelName      string    `gorm:"type:character varying"`
 	Channelnamearr   []string  `gorm:"-"`
+	FormPreviewImagepath string    `gorm:"type:character varying"`
+	FormPreviewImagename string    `gorm:"type:character varying"`
 }
 
 type Forms struct {
@@ -195,15 +199,15 @@ func (Formsmodel FormModel) ResponseCount(DB *gorm.DB, tenantid int, entryid int
 
 //Create Forms
 
-func (Formsmodel FormModel) CreateForm(tblforms *TblForm, DB *gorm.DB) error {
+func (Formsmodel FormModel) CreateForm(tblforms *TblForm, DB *gorm.DB) (formdetails TblForm, err error) {
 	fmt.Println("makeprint")
 
 	if err := DB.Debug().Table("tbl_forms").Create(&tblforms).Error; err != nil {
 
-		return err
+		return TblForm{}, err
 	}
 
-	return nil
+	return *tblforms, nil
 }
 
 func (Formsmodel FormModel) ChangeStatus(forms *TblForm, DB *gorm.DB) error {
@@ -243,7 +247,7 @@ func (Formsmodel FormModel) EditForm(id int, tenantid int, DB *gorm.DB) (Forms T
 
 func (Formsmodel FormModel) UpdateForm(tblforms *TblForm, DB *gorm.DB) error {
 
-	if err := DB.Table("tbl_forms").Where("id=? and tenant_id=?", &tblforms.Id, &tblforms.TenantId).UpdateColumns(map[string]interface{}{"form_title": &tblforms.FormTitle, "form_slug": &tblforms.FormSlug, "form_data": &tblforms.FormData, "status": &tblforms.Status, "modified_by": &tblforms.ModifiedBy, "modified_on": &tblforms.ModifiedOn, "channel_name": &tblforms.ChannelName, "channel_id": &tblforms.ChannelId}).Error; err != nil {
+	if err := DB.Table("tbl_forms").Where("id=? and tenant_id=?", &tblforms.Id, &tblforms.TenantId).UpdateColumns(map[string]interface{}{"form_title": &tblforms.FormTitle, "form_slug": &tblforms.FormSlug, "form_data": &tblforms.FormData, "status": &tblforms.Status, "modified_by": &tblforms.ModifiedBy, "modified_on": &tblforms.ModifiedOn, "channel_name": &tblforms.ChannelName, "channel_id": &tblforms.ChannelId, "form_preview_imagepath": &tblforms.FormPreviewImagepath,"form_preview_imagename":&tblforms.FormPreviewImagename}).Error; err != nil {
 
 		return err
 	}
@@ -373,4 +377,3 @@ func (Formsmodel FormModel) GetCtaById(forms *TblForm, DB *gorm.DB, id int) (err
 
 	return nil
 }
-

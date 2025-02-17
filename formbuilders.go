@@ -50,16 +50,16 @@ func (forms *Formbuilders) FormBuildersList(Limit int, offset int, filter Filter
 
 //Create functionality
 
-func (forms *Formbuilders) CreateForms(tblform TblForm) error {
+func (forms *Formbuilders) CreateForms(tblform TblForm) (TblForm, error) {
 
 	if AuthErr := AuthandPermission(forms); AuthErr != nil {
 
-		return AuthErr
+		return TblForm{}, AuthErr
 
 	}
 
 	if tblform.FormTitle == "" {
-		return ErrorFormName
+		return TblForm{}, ErrorFormName
 	}
 	var Forms TblForm
 
@@ -91,13 +91,13 @@ func (forms *Formbuilders) CreateForms(tblform TblForm) error {
 
 	Forms.ChannelName = tblform.ChannelName
 
-	err := Formsmodel.CreateForm(&Forms, forms.DB)
+	formdetails, err := Formsmodel.CreateForm(&Forms, forms.DB)
 	if err != nil {
 
-		return err
+		return TblForm{}, err
 
 	}
-	return nil
+	return formdetails, nil
 }
 
 func (forms *Formbuilders) StatusChange(id int, status int, modifiedby int, tenantid int) error {
@@ -202,6 +202,10 @@ func (forms *Formbuilders) UpdateForms(tblforms TblForm, tenantid int) error {
 	Forms.ChannelId = tblforms.ChannelId
 
 	Forms.ChannelName = tblforms.ChannelName
+
+	Forms.FormPreviewImagepath = tblforms.FormPreviewImagepath
+
+	Forms.FormPreviewImagename = tblforms.FormPreviewImagename
 
 	err := Formsmodel.UpdateForm(&Forms, forms.DB)
 	if err != nil {
@@ -438,7 +442,12 @@ func (forms *Formbuilders) Addctatomycollecton(uid string, tenantid int, userid 
 
 	NewForms.ChannelName = Forms.ChannelName
 
-	err1 := Formsmodel.CreateForm(&NewForms, forms.DB)
+	NewForms.FormPreviewImagename = Forms.FormPreviewImagename
+
+	NewForms.FormPreviewImagepath =Forms.FormPreviewImagepath
+
+
+	_, err1 := Formsmodel.CreateForm(&NewForms, forms.DB)
 	if err1 != nil {
 
 		return false, err1
@@ -489,4 +498,3 @@ func (forms *Formbuilders) GetCtaById(ctaid int) (form TblForm, err error) {
 	return Forms, nil
 
 }
-

@@ -124,7 +124,7 @@ func TestCreateForms(t *testing.T) {
 
 	if permission {
 
-		err := Forms.CreateForms(tblForm)
+		_,err := Forms.CreateForms(tblForm)
 		if err != nil {
 			fmt.Println(err)
 		}
