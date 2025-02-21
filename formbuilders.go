@@ -91,6 +91,12 @@ func (forms *Formbuilders) CreateForms(tblform TblForm) (TblForm, error) {
 
 	Forms.ChannelName = tblform.ChannelName
 
+	Forms.FormDescription = tblform.FormDescription
+
+	Forms.FormImagePath = tblform.FormImagePath
+
+	Forms.FormPreviewImagepath = tblform.FormPreviewImagepath
+
 	formdetails, err := Formsmodel.CreateForm(&Forms, forms.DB)
 	if err != nil {
 
@@ -444,8 +450,7 @@ func (forms *Formbuilders) Addctatomycollecton(uid string, tenantid int, userid 
 
 	NewForms.FormPreviewImagename = Forms.FormPreviewImagename
 
-	NewForms.FormPreviewImagepath =Forms.FormPreviewImagepath
-
+	NewForms.FormPreviewImagepath = Forms.FormPreviewImagepath
 
 	_, err1 := Formsmodel.CreateForm(&NewForms, forms.DB)
 	if err1 != nil {
@@ -498,3 +503,4 @@ func (forms *Formbuilders) GetCtaById(ctaid int) (form TblForm, err error) {
 	return Forms, nil
 
 }
+

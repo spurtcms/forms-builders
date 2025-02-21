@@ -31,6 +31,7 @@ type TblForm struct {
 	ChannelName     string    `gorm:"type:character varying"`
 	FormPreviewImagepath string    `gorm:"type:character varying"`
 	FormPreviewImagename string    `gorm:"type:character varying"`
+	
 }
 
 type TblForms struct {
@@ -377,3 +378,4 @@ func (Formsmodel FormModel) GetCtaById(forms *TblForm, DB *gorm.DB, id int) (err
 
 	return nil
 }
+
