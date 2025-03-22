@@ -3,7 +3,7 @@ module github.com/spurtcms/forms-builders
 go 1.20
 
 require (
-	github.com/spurtcms/auth v0.0.23
+	github.com/spurtcms/auth v0.0.37
 	github.com/spurtcms/team-roles v0.0.13
 	gorm.io/gorm v1.25.12
 )

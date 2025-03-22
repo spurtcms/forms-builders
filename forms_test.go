@@ -61,7 +61,7 @@ func TestFormList(t *testing.T) {
 
 	Auth.VerifyToken(token, SecretKey)
 
-	permission, _ := Auth.IsGranted("Forms Builder", auth.CRUD, 1)
+	permission, _ := Auth.IsGranted("Forms Builder", auth.CRUD, "1")
 
 	Forms := FormSetup(Config{
 		DB:               db,
@@ -72,7 +72,7 @@ func TestFormList(t *testing.T) {
 
 	if permission {
 
-		Formlist, TotalFormsCount, responseCount, err := Forms.FormBuildersList(10, 0, Filter{}, 1, 1,0,"",0)
+		Formlist, TotalFormsCount, responseCount, err := Forms.FormBuildersList(10, 0, Filter{}, "1", 1, 0, "", 0)
 
 		if err != nil {
 			fmt.Println(err)
@@ -104,7 +104,7 @@ func TestCreateForms(t *testing.T) {
 
 	Auth.VerifyToken(token, SecretKey)
 
-	permission, _ := Auth.IsGranted("Forms Builder", auth.CRUD, 1)
+	permission, _ := Auth.IsGranted("Forms Builder", auth.CRUD, "1")
 
 	Forms := FormSetup(Config{
 		DB:               db,
@@ -119,12 +119,12 @@ func TestCreateForms(t *testing.T) {
 		Status:    1,
 		IsActive:  1,
 		CreatedBy: 2,
-		TenantId:  1,
+		TenantId:  "1",
 	}
 
 	if permission {
 
-		_,err := Forms.CreateForms(tblForm)
+		_, err := Forms.CreateForms(tblForm)
 		if err != nil {
 			fmt.Println(err)
 		}
@@ -155,7 +155,7 @@ func TestUpdate(t *testing.T) {
 
 	Auth.VerifyToken(token, SecretKey)
 
-	permission, _ := Auth.IsGranted("Forms Builder", auth.CRUD, 1)
+	permission, _ := Auth.IsGranted("Forms Builder", auth.CRUD, "1")
 
 	Forms := FormSetup(Config{
 		DB:               db,
@@ -175,7 +175,7 @@ func TestUpdate(t *testing.T) {
 
 	if permission {
 
-		err := Forms.UpdateForms(tblForm, 1)
+		err := Forms.UpdateForms(tblForm, "1")
 		if err != nil {
 			fmt.Println(err)
 		}
@@ -206,7 +206,7 @@ func TestDeleteForms(t *testing.T) {
 
 	Auth.VerifyToken(token, SecretKey)
 
-	permission, _ := Auth.IsGranted("Forms Builder", auth.CRUD, 1)
+	permission, _ := Auth.IsGranted("Forms Builder", auth.CRUD, "1")
 
 	Forms := FormSetup(Config{
 		DB:               db,
@@ -215,9 +215,8 @@ func TestDeleteForms(t *testing.T) {
 		Auth:             Auth,
 	})
 
-
 	if permission {
-		err := Forms.Formdelete(10, 2, 1)
+		err := Forms.Formdelete(10, 2, "1")
 		if err != nil {
 			fmt.Println(err)
 		}

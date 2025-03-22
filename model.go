@@ -10,59 +10,58 @@ import (
 
 // Create Forms
 type TblForm struct {
-	Id              int       `gorm:"primaryKey;auto_increment;type:serial"`
-	FormTitle       string    `gorm:"type:character varying"`
-	FormSlug        string    `gorm:"type:character varying"`
-	FormData        string    `gorm:"type:character varying"`
-	Status          int       `gorm:"type:integer"`
-	IsActive        int       `gorm:"type:integer"`
-	CreatedBy       int       `gorm:"type:integer"`
-	CreatedOn       time.Time `gorm:"type:timestamp without time zone;DEFAULT:NULL"`
-	ModifiedBy      int       `gorm:"type:integer;DEFAULT:NULL"`
-	ModifiedOn      time.Time `gorm:"type:timestamp without time zone;DEFAULT:NULL"`
-	DeletedBy       int       `gorm:"type:integer;DEFAULT:NULL"`
-	DeletedOn       time.Time `gorm:"type:timestamp without time zone;DEFAULT:NULL"`
-	IsDeleted       int       `gorm:"type:integer;DEFAULT:0"`
-	TenantId        int       `gorm:"type:integer"`
-	Uuid            string    `gorm:"type:character varying"`
-	FormImagePath   string    `gorm:"type:character varying"`
-	FormDescription string    `gorm:"type:character varying"`
-	ChannelId       string    `gorm:"type:character varying"`
-	ChannelName     string    `gorm:"type:character varying"`
+	Id                   int       `gorm:"primaryKey;auto_increment;type:serial"`
+	FormTitle            string    `gorm:"type:character varying"`
+	FormSlug             string    `gorm:"type:character varying"`
+	FormData             string    `gorm:"type:character varying"`
+	Status               int       `gorm:"type:integer"`
+	IsActive             int       `gorm:"type:integer"`
+	CreatedBy            int       `gorm:"type:integer"`
+	CreatedOn            time.Time `gorm:"type:timestamp without time zone;DEFAULT:NULL"`
+	ModifiedBy           int       `gorm:"type:integer;DEFAULT:NULL"`
+	ModifiedOn           time.Time `gorm:"type:timestamp without time zone;DEFAULT:NULL"`
+	DeletedBy            int       `gorm:"type:integer;DEFAULT:NULL"`
+	DeletedOn            time.Time `gorm:"type:timestamp without time zone;DEFAULT:NULL"`
+	IsDeleted            int       `gorm:"type:integer;DEFAULT:0"`
+	TenantId             string    `gorm:"type:character varying"`
+	Uuid                 string    `gorm:"type:character varying"`
+	FormImagePath        string    `gorm:"type:character varying"`
+	FormDescription      string    `gorm:"type:character varying"`
+	ChannelId            string    `gorm:"type:character varying"`
+	ChannelName          string    `gorm:"type:character varying"`
 	FormPreviewImagepath string    `gorm:"type:character varying"`
 	FormPreviewImagename string    `gorm:"type:character varying"`
-	
 }
 
 type TblForms struct {
-	Id               int       `gorm:"primaryKey;auto_increment;type:serial"`
-	FormTitle        string    `gorm:"type:character varying"`
-	FormSlug         string    `gorm:"type:character varying"`
-	FormData         string    `gorm:"type:character varying"`
-	Status           int       `gorm:"type:integer"`
-	IsActive         int       `gorm:"type:integer"`
-	CreatedBy        int       `gorm:"type:integer"`
-	CreatedOn        time.Time `gorm:"type:timestamp without time zone;DEFAULT:NULL"`
-	ModifiedBy       int       `gorm:"type:integer;DEFAULT:NULL"`
-	ModifiedOn       time.Time `gorm:"type:timestamp without time zone;DEFAULT:NULL"`
-	DeletedBy        int       `gorm:"type:integer;DEFAULT:NULL"`
-	DeletedOn        time.Time `gorm:"type:timestamp without time zone;DEFAULT:NULL"`
-	IsDeleted        int       `gorm:"type:integer;DEFAULT:0"`
-	TenantId         int       `gorm:"type:integer"`
-	Uuid             string    `gorm:"type:character varying"`
-	Username         string    `gorm:"<-:false"`
-	ProfileImagePath string    `gorm:"<-:false"`
-	NameString       string    `gorm:"<-:false"`
-	FirstName        string    `gorm:"<-:false"`
-	LastName         string    `gorm:"<-:false"`
-	DateString       string    `gorm:"-"`
-	CreatedDate      string    `gorm:"-:migration;<-:false"`
-	ModifiedDate     string    `gorm:"-:migration;<-:false"`
-	FormImagePath    string    `gorm:"type:character varying"`
-	FormDescription  string    `gorm:"type:character varying"`
-	ChannelId        string    `gorm:"type:character varying"`
-	ChannelName      string    `gorm:"type:character varying"`
-	Channelnamearr   []string  `gorm:"-"`
+	Id                   int       `gorm:"primaryKey;auto_increment;type:serial"`
+	FormTitle            string    `gorm:"type:character varying"`
+	FormSlug             string    `gorm:"type:character varying"`
+	FormData             string    `gorm:"type:character varying"`
+	Status               int       `gorm:"type:integer"`
+	IsActive             int       `gorm:"type:integer"`
+	CreatedBy            int       `gorm:"type:integer"`
+	CreatedOn            time.Time `gorm:"type:timestamp without time zone;DEFAULT:NULL"`
+	ModifiedBy           int       `gorm:"type:integer;DEFAULT:NULL"`
+	ModifiedOn           time.Time `gorm:"type:timestamp without time zone;DEFAULT:NULL"`
+	DeletedBy            int       `gorm:"type:integer;DEFAULT:NULL"`
+	DeletedOn            time.Time `gorm:"type:timestamp without time zone;DEFAULT:NULL"`
+	IsDeleted            int       `gorm:"type:integer;DEFAULT:0"`
+	TenantId             string    `gorm:"type:character varying"`
+	Uuid                 string    `gorm:"type:character varying"`
+	Username             string    `gorm:"<-:false"`
+	ProfileImagePath     string    `gorm:"<-:false"`
+	NameString           string    `gorm:"<-:false"`
+	FirstName            string    `gorm:"<-:false"`
+	LastName             string    `gorm:"<-:false"`
+	DateString           string    `gorm:"-"`
+	CreatedDate          string    `gorm:"-:migration;<-:false"`
+	ModifiedDate         string    `gorm:"-:migration;<-:false"`
+	FormImagePath        string    `gorm:"type:character varying"`
+	FormDescription      string    `gorm:"type:character varying"`
+	ChannelId            string    `gorm:"type:character varying"`
+	ChannelName          string    `gorm:"type:character varying"`
+	Channelnamearr       []string  `gorm:"-"`
 	FormPreviewImagepath string    `gorm:"type:character varying"`
 	FormPreviewImagename string    `gorm:"type:character varying"`
 }
@@ -84,7 +83,7 @@ type TblFormResponse struct {
 	IsDeleted    int       `gorm:"type:integer;DEFAULT:0"`
 	CreatedBy    int       `gorm:"type:integer"`
 	CreatedOn    time.Time `gorm:"type:timestamp without time zone;DEFAULT:NULL"`
-	TenantId     int       `gorm:"type:integer"`
+	TenantId     string    `gorm:"type:character varying"`
 	EntryId      int       `gorm:"type:integer"`
 }
 
@@ -97,7 +96,7 @@ type TblFormResponses struct {
 	IsDeleted    int       `gorm:"type:integer;DEFAULT:0"`
 	CreatedBy    int       `gorm:"type:integer"`
 	CreatedOn    time.Time `gorm:"type:timestamp without time zone;DEFAULT:NULL"`
-	TenantId     int       `gorm:"type:integer"`
+	TenantId     string    `gorm:"type:character varying"`
 	DateString   string    `gorm:"-"`
 	EntryId      int       `gorm:"type:integer"`
 }
@@ -122,7 +121,7 @@ type FormResponseCount struct {
 var Formsmodel FormModel
 
 // FormList
-func (Formsmodel FormModel) FormsList(offset int, limit int, filter Filter, DB *gorm.DB, tenantid int, status int, channelslug string, defaultlist int) (Forms []TblForms, Count int64, err error) {
+func (Formsmodel FormModel) FormsList(offset int, limit int, filter Filter, DB *gorm.DB, tenantid string, status int, channelslug string, defaultlist int) (Forms []TblForms, Count int64, err error) {
 
 	query := DB.Debug().Table("tbl_forms").
 		Select("tbl_forms.*, tbl_users.username,tbl_users.first_name,tbl_users.last_name, tbl_users.profile_image_path").
@@ -174,7 +173,7 @@ func (Formsmodel FormModel) FormsList(offset int, limit int, filter Filter, DB *
 
 // Response count
 
-func (Formsmodel FormModel) ResponseCount(DB *gorm.DB, tenantid int, entryid int) ([]FormResponseCount, error) {
+func (Formsmodel FormModel) ResponseCount(DB *gorm.DB, tenantid string, entryid int) ([]FormResponseCount, error) {
 	var results []FormResponseCount
 
 	if entryid == 0 {
@@ -234,7 +233,7 @@ func (Formsmodel FormModel) FormsDelete(forms *TblForm, DB *gorm.DB) error {
 
 }
 
-func (Formsmodel FormModel) EditForm(id int, tenantid int, DB *gorm.DB) (Forms TblForm, err error) {
+func (Formsmodel FormModel) EditForm(id int, tenantid string, DB *gorm.DB) (Forms TblForm, err error) {
 
 	if err := DB.Table("tbl_forms").Where("id=? and tenant_id=?", id, tenantid).First(&Forms).Error; err != nil {
 
@@ -248,7 +247,7 @@ func (Formsmodel FormModel) EditForm(id int, tenantid int, DB *gorm.DB) (Forms T
 
 func (Formsmodel FormModel) UpdateForm(tblforms *TblForm, DB *gorm.DB) error {
 
-	if err := DB.Table("tbl_forms").Where("id=? and tenant_id=?", &tblforms.Id, &tblforms.TenantId).UpdateColumns(map[string]interface{}{"form_title": &tblforms.FormTitle, "form_slug": &tblforms.FormSlug, "form_data": &tblforms.FormData, "status": &tblforms.Status, "modified_by": &tblforms.ModifiedBy, "modified_on": &tblforms.ModifiedOn, "channel_name": &tblforms.ChannelName, "channel_id": &tblforms.ChannelId, "form_preview_imagepath": &tblforms.FormPreviewImagepath,"form_preview_imagename":&tblforms.FormPreviewImagename}).Error; err != nil {
+	if err := DB.Table("tbl_forms").Where("id=? and tenant_id=?", &tblforms.Id, &tblforms.TenantId).UpdateColumns(map[string]interface{}{"form_title": &tblforms.FormTitle, "form_slug": &tblforms.FormSlug, "form_data": &tblforms.FormData, "status": &tblforms.Status, "modified_by": &tblforms.ModifiedBy, "modified_on": &tblforms.ModifiedOn, "channel_name": &tblforms.ChannelName, "channel_id": &tblforms.ChannelId, "form_preview_imagepath": &tblforms.FormPreviewImagepath, "form_preview_imagename": &tblforms.FormPreviewImagename}).Error; err != nil {
 
 		return err
 	}
@@ -345,7 +344,7 @@ func (Formsmodel FormModel) FormResponseList(offset int, limit int, filter Filte
 }
 
 /*Isactive cta*/
-func (Formsmodel FormModel) FormIsActive(tblform *TblForm, id, val int, DB *gorm.DB, tenantid int) error {
+func (Formsmodel FormModel) FormIsActive(tblform *TblForm, id, val int, DB *gorm.DB, tenantid string) error {
 
 	if err := DB.Debug().Table("tbl_forms").Where("id=? and tenant_id=?", id, tenantid).UpdateColumns(map[string]interface{}{"is_active": val, "modified_on": tblform.ModifiedOn, "modified_by": tblform.ModifiedBy}).Error; err != nil {
 
@@ -357,7 +356,7 @@ func (Formsmodel FormModel) FormIsActive(tblform *TblForm, id, val int, DB *gorm
 
 //Remove cta from mycollection//
 
-func (Formsmodel FormModel) Removecta(form *TblForm, uuid string, tenantid int, DB *gorm.DB) error {
+func (Formsmodel FormModel) Removecta(form *TblForm, uuid string, tenantid string, DB *gorm.DB) error {
 
 	if err := DB.Debug().Table("tbl_forms").Where("uuid=? and tenant_id=?", uuid, tenantid).UpdateColumns(map[string]interface{}{"is_deleted": 1, "deleted_on": form.DeletedOn, "deleted_by": form.DeletedBy}).Error; err != nil {
 
@@ -378,4 +377,3 @@ func (Formsmodel FormModel) GetCtaById(forms *TblForm, DB *gorm.DB, id int) (err
 
 	return nil
 }
-

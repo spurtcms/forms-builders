@@ -24,7 +24,7 @@ func FormSetup(config Config) *Formbuilders {
 }
 
 // FormList
-func (forms *Formbuilders) FormBuildersList(Limit int, offset int, filter Filter, tenantid int, status int, entryid int, channelslug string, defaultlist int) (formlist []TblForms, count int64, ResponseCount []FormResponseCount, err error) {
+func (forms *Formbuilders) FormBuildersList(Limit int, offset int, filter Filter, tenantid string, status int, entryid int, channelslug string, defaultlist int) (formlist []TblForms, count int64, ResponseCount []FormResponseCount, err error) {
 
 	if AuthErr := AuthandPermission(forms); AuthErr != nil {
 
@@ -106,7 +106,7 @@ func (forms *Formbuilders) CreateForms(tblform TblForm) (TblForm, error) {
 	return formdetails, nil
 }
 
-func (forms *Formbuilders) StatusChange(id int, status int, modifiedby int, tenantid int) error {
+func (forms *Formbuilders) StatusChange(id int, status int, modifiedby int, tenantid string) error {
 
 	if AuthErr := AuthandPermission(forms); AuthErr != nil {
 
@@ -133,7 +133,7 @@ func (forms *Formbuilders) StatusChange(id int, status int, modifiedby int, tena
 	return nil
 }
 
-func (forms *Formbuilders) Formdelete(id, deletedby, tenantid int) error {
+func (forms *Formbuilders) Formdelete(id, deletedby int, tenantid string) error {
 
 	if AuthErr := AuthandPermission(forms); AuthErr != nil {
 
@@ -162,7 +162,7 @@ func (forms *Formbuilders) Formdelete(id, deletedby, tenantid int) error {
 	return nil
 }
 
-func (forms *Formbuilders) FormsEdit(id int, TenantId int) (FormList TblForm, err error) {
+func (forms *Formbuilders) FormsEdit(id int, TenantId string) (FormList TblForm, err error) {
 
 	if AuthErr := AuthandPermission(forms); AuthErr != nil {
 
@@ -180,7 +180,7 @@ func (forms *Formbuilders) FormsEdit(id int, TenantId int) (FormList TblForm, er
 
 }
 
-func (forms *Formbuilders) UpdateForms(tblforms TblForm, tenantid int) error {
+func (forms *Formbuilders) UpdateForms(tblforms TblForm, tenantid string) error {
 
 	if AuthErr := AuthandPermission(forms); AuthErr != nil {
 
@@ -223,7 +223,7 @@ func (forms *Formbuilders) UpdateForms(tblforms TblForm, tenantid int) error {
 
 }
 
-func (forms *Formbuilders) MultiSelectDeleteForm(formids []int, modifiedby int, tenantid int) error {
+func (forms *Formbuilders) MultiSelectDeleteForm(formids []int, modifiedby int, tenantid string) error {
 
 	if AuthErr := AuthandPermission(forms); AuthErr != nil {
 
@@ -250,7 +250,7 @@ func (forms *Formbuilders) MultiSelectDeleteForm(formids []int, modifiedby int, 
 	return nil
 }
 
-func (forms *Formbuilders) MultiSelectStatus(formids []int, status int, modifiedby int, tenantid int) error {
+func (forms *Formbuilders) MultiSelectStatus(formids []int, status int, modifiedby int, tenantid string) error {
 
 	if AuthErr := AuthandPermission(forms); AuthErr != nil {
 
@@ -337,7 +337,7 @@ func (forms *Formbuilders) CreateFormResponse(response TblFormResponse) error {
 	return nil
 }
 
-func (forms *Formbuilders) FormDetailLists(Limit int, offset int, filter Filter, formid, userid, entryid, tenantid int) (response []TblFormResponses, count int64, FormTitle string, err error) {
+func (forms *Formbuilders) FormDetailLists(Limit int, offset int, filter Filter, formid, userid, entryid int, tenantid string) (response []TblFormResponses, count int64, FormTitle string, err error) {
 
 	if AuthErr := AuthandPermission(forms); AuthErr != nil {
 
@@ -372,7 +372,7 @@ func (forms *Formbuilders) FormDetailLists(Limit int, offset int, filter Filter,
 }
 
 // change cta status
-func (forms *Formbuilders) ChangeFormStatus(id int, isactive int, userid int, tenantid int) (bool, error) {
+func (forms *Formbuilders) ChangeFormStatus(id int, isactive int, userid int, tenantid string) (bool, error) {
 
 	autherr := AuthandPermission(forms)
 
@@ -394,7 +394,7 @@ func (forms *Formbuilders) ChangeFormStatus(id int, isactive int, userid int, te
 
 //Add to mycollection//
 
-func (forms *Formbuilders) Addctatomycollecton(uid string, tenantid int, userid int, channelid string) (bool, error) {
+func (forms *Formbuilders) Addctatomycollecton(uid string, tenantid string, userid int, channelid string) (bool, error) {
 
 	fmt.Println("dfdfdfdf")
 
@@ -461,7 +461,7 @@ func (forms *Formbuilders) Addctatomycollecton(uid string, tenantid int, userid 
 	return true, nil
 }
 
-func (forms *Formbuilders) Removectatomycollecton(uid string, tenantid int, userid int) (bool, error) {
+func (forms *Formbuilders) Removectatomycollecton(uid string, tenantid string, userid int) (bool, error) {
 
 	autherr := AuthandPermission(forms)
 
@@ -503,4 +503,3 @@ func (forms *Formbuilders) GetCtaById(ctaid int) (form TblForm, err error) {
 	return Forms, nil
 
 }
-
