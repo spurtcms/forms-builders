@@ -327,6 +327,10 @@ func (forms *Formbuilders) CreateFormResponse(response TblFormResponse) error {
 
 	Response.EntryId = response.EntryId
 
+	Response.Ticket = response.Ticket
+
+	Response.Email = response.Email
+
 	err := Formsmodel.CreateResponse(&Response, forms.DB)
 	if err != nil {
 
@@ -501,5 +505,42 @@ func (forms *Formbuilders) GetCtaById(ctaid int) (form TblForm, err error) {
 	}
 
 	return Forms, nil
+
+}
+
+func (forms *Formbuilders) OverAllFormResponses(tenantid string) (ResponseList []TblFormResponses, err error) {
+
+	if AuthErr := AuthandPermission(forms); AuthErr != nil {
+
+		return nil, AuthErr
+
+	}
+
+	response, err := Formsmodel.OverallResponseList(tenantid, forms.DB)
+	if err != nil {
+
+		return nil, err
+
+	}
+
+	return response, nil
+
+}
+
+func (forms *Formbuilders) ReplyForResponses(id int, TenantId string) (ResponseList TblFormResponse, err error) {
+
+	if AuthErr := AuthandPermission(forms); AuthErr != nil {
+
+		return TblFormResponse{}, AuthErr
+
+	}
+
+	response, err := Formsmodel.ReplyforResponse(id, TenantId, forms.DB)
+	if err != nil {
+
+		return TblFormResponse{}, err
+
+	}
+	return response, nil
 
 }

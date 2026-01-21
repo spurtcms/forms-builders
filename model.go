@@ -78,12 +78,14 @@ type TblFormResponse struct {
 	Id           int       `gorm:"primaryKey;auto_increment;type:serial"`
 	FormId       int       `gorm:"type:integer;"`
 	FormResponse string    `gorm:"type:character varying"`
+	Email        string    `gorm:"type:character varying"`
 	UserId       int       `gorm:"type:integer;"`
 	IsActive     int       `gorm:"type:integer"`
 	IsDeleted    int       `gorm:"type:integer;DEFAULT:0"`
 	CreatedBy    int       `gorm:"type:integer"`
 	CreatedOn    time.Time `gorm:"type:timestamp without time zone;DEFAULT:NULL"`
 	TenantId     string    `gorm:"type:character varying"`
+	Ticket       string    `gorm:"type:character varying"`
 	EntryId      int       `gorm:"type:integer"`
 }
 
@@ -91,13 +93,16 @@ type TblFormResponses struct {
 	Id           int       `gorm:"primaryKey;auto_increment;type:serial"`
 	FormId       int       `gorm:"type:integer;"`
 	FormResponse string    `gorm:"type:character varying"`
+	Email        string    `gorm:"type:character varying"`
 	UserId       int       `gorm:"type:integer;"`
 	IsActive     int       `gorm:"type:integer"`
 	IsDeleted    int       `gorm:"type:integer;DEFAULT:0"`
 	CreatedBy    int       `gorm:"type:integer"`
 	CreatedOn    time.Time `gorm:"type:timestamp without time zone;DEFAULT:NULL"`
 	TenantId     string    `gorm:"type:character varying"`
+	Ticket       string    `gorm:"type:character varying"`
 	DateString   string    `gorm:"-"`
+	FormTitle    string    `gorm:"column:form_title" json:"form_title"`
 	EntryId      int       `gorm:"type:integer"`
 }
 
@@ -299,10 +304,40 @@ func (Formsmodel FormModel) CreateResponse(response *TblFormResponse, DB *gorm.D
 	return nil
 }
 
+// Form OverallResponseList
+func (Formsmodel FormModel) OverallResponseList(tenantid string, DB *gorm.DB) (ResponseList []TblFormResponses, err error) {
+
+	result := DB.Debug().
+		Table("tbl_form_responses").
+		Select("tbl_form_responses.*,tbl_forms.form_title as form_title").
+		Joins("INNER JOIN tbl_forms ON tbl_form_responses.form_id = tbl_forms.id").
+		Order("tbl_form_responses.created_on desc").
+		Find(&ResponseList)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return ResponseList, nil
+}
+
+func (Formsmodel FormModel) ReplyforResponse(id int, tenantid string, DB *gorm.DB) (ResponseList TblFormResponse, err error) {
+
+	var response TblFormResponse
+
+	if err := DB.Table("tbl_form_responses").Where("id=? and tenant_id=?", id, tenantid).First(&response).Error; err != nil {
+
+		return TblFormResponse{}, err
+
+	}
+
+	return response, nil
+
+}
+
 func (Formsmodel FormModel) FormResponseList(offset int, limit int, filter Filter, response *TblFormResponses, DB *gorm.DB) (ResponseList []TblFormResponses, Count int64, FormTitle string, err error) {
 	fmt.Println("FormResponseList")
 
-	query := DB.Table("tbl_form_responses")
+	query := DB.Debug().Table("tbl_form_responses")
 	if response.EntryId == 0 {
 		query = query.Where("form_id=? and user_id=? and tenant_id=?", response.FormId, response.UserId, response.TenantId).Order("tbl_form_responses.created_on desc")
 		fmt.Println("wwww:")
