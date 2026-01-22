@@ -327,6 +327,8 @@ func (forms *Formbuilders) CreateFormResponse(response TblFormResponse) error {
 
 	Response.EntryId = response.EntryId
 
+	Response.Name = response.Name
+
 	Response.Ticket = response.Ticket
 
 	Response.Email = response.Email

@@ -86,6 +86,7 @@ type TblFormResponse struct {
 	CreatedBy    int       `gorm:"type:integer"`
 	CreatedOn    time.Time `gorm:"type:timestamp without time zone;DEFAULT:NULL"`
 	TenantId     string    `gorm:"type:character varying"`
+	Name         string    `gorm:"type:character varying"`
 	Ticket       string    `gorm:"type:character varying"`
 	Reply        string    `gorm:"type:character varying"`
 	EntryId      int       `gorm:"type:integer"`
@@ -102,6 +103,7 @@ type TblFormResponses struct {
 	CreatedBy    int           `gorm:"type:integer"`
 	CreatedOn    time.Time     `gorm:"type:timestamp without time zone;DEFAULT:NULL"`
 	TenantId     string        `gorm:"type:character varying"`
+	Name         string        `gorm:"type:character varying"`
 	Ticket       string        `gorm:"type:character varying"`
 	Reply        string        `gorm:"type:character varying"`
 	Replycontent template.HTML `gorm:"-"`
