@@ -508,39 +508,42 @@ func (forms *Formbuilders) GetCtaById(ctaid int) (form TblForm, err error) {
 
 }
 
-func (forms *Formbuilders) OverAllFormResponses(tenantid string) (ResponseList []TblFormResponses, err error) {
+func (forms *Formbuilders) OverAllFormResponses(Limit int, offset int, tenantid string) (ResponseList []TblFormResponses, count int64, err error) {
 
 	if AuthErr := AuthandPermission(forms); AuthErr != nil {
 
-		return nil, AuthErr
+		return nil, 0, AuthErr
 
 	}
 
-	response, err := Formsmodel.OverallResponseList(tenantid, forms.DB)
+	response, _, err := Formsmodel.OverallResponseList(offset, Limit, tenantid, forms.DB)
+
+	_, count, err = Formsmodel.OverallResponseList(0, 0, tenantid, forms.DB)
+
 	if err != nil {
 
-		return nil, err
+		return nil, 0, err
 
 	}
 
-	return response, nil
+	return response, count, nil
 
 }
 
-func (forms *Formbuilders) ReplyForResponses(id int, TenantId string) (ResponseList TblFormResponse, err error) {
+func (forms *Formbuilders) ReplyForResponses(ticket string, htmlcontent string, TenantId string) (bool, error) {
 
 	if AuthErr := AuthandPermission(forms); AuthErr != nil {
 
-		return TblFormResponse{}, AuthErr
+		return false, AuthErr
 
 	}
 
-	response, err := Formsmodel.ReplyforResponse(id, TenantId, forms.DB)
+	status, err := Formsmodel.ReplyforResponse(ticket, htmlcontent, TenantId, forms.DB)
 	if err != nil {
 
-		return TblFormResponse{}, err
+		return false, err
 
 	}
-	return response, nil
+	return status, nil
 
 }
