@@ -317,6 +317,7 @@ func (Formsmodel FormModel) OverallResponseList(offset int, limit int, tenantid 
 		Table("tbl_form_responses").
 		Select("tbl_form_responses.*,tbl_forms.form_title as form_title").
 		Joins("INNER JOIN tbl_forms ON tbl_form_responses.form_id = tbl_forms.id").
+		Where("tbl_form_responses.tenant_id = ?", tenantid).
 		Order("tbl_form_responses.created_on desc")
 
 	if limit != 0 {
