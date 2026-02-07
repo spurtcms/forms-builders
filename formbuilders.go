@@ -97,6 +97,10 @@ func (forms *Formbuilders) CreateForms(tblform TblForm) (TblForm, error) {
 
 	Forms.FormPreviewImagepath = tblform.FormPreviewImagepath
 
+	Forms.ImageName = tblform.ImageName
+
+	Forms.ImagePath = tblform.ImagePath
+
 	formdetails, err := Formsmodel.CreateForm(&Forms, forms.DB)
 	if err != nil {
 
@@ -212,6 +216,12 @@ func (forms *Formbuilders) UpdateForms(tblforms TblForm, tenantid string) error 
 	Forms.FormPreviewImagepath = tblforms.FormPreviewImagepath
 
 	Forms.FormPreviewImagename = tblforms.FormPreviewImagename
+
+	Forms.FormDescription = tblforms.FormDescription
+
+	Forms.ImageName = tblforms.ImageName
+
+	Forms.ImagePath = tblforms.ImagePath
 
 	err := Formsmodel.UpdateForm(&Forms, forms.DB)
 	if err != nil {
@@ -529,6 +539,24 @@ func (forms *Formbuilders) OverAllFormResponses(Limit int, offset int, tenantid 
 	}
 
 	return response, count, nil
+
+}
+
+func (forms *Formbuilders) ResponseDetail(ticket string, TenantId string) (*TblFormResponses, error) {
+
+	if AuthErr := AuthandPermission(forms); AuthErr != nil {
+
+		return nil, AuthErr
+
+	}
+
+	response, err := Formsmodel.ResponseDetail(ticket, TenantId, forms.DB)
+	if err != nil {
+
+		return nil, err
+
+	}
+	return response, nil
 
 }
 

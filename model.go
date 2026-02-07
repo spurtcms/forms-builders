@@ -32,6 +32,8 @@ type TblForm struct {
 	ChannelName          string    `gorm:"type:character varying"`
 	FormPreviewImagepath string    `gorm:"type:character varying"`
 	FormPreviewImagename string    `gorm:"type:character varying"`
+	ImageName            string    `gorm:"type:character varying"`
+	ImagePath            string    `gorm:"type:character varying"`
 }
 
 type TblForms struct {
@@ -65,6 +67,8 @@ type TblForms struct {
 	Channelnamearr       []string  `gorm:"-"`
 	FormPreviewImagepath string    `gorm:"type:character varying"`
 	FormPreviewImagename string    `gorm:"type:character varying"`
+	ImageName            string    `gorm:"type:character varying"`
+	ImagePath            string    `gorm:"type:character varying"`
 }
 
 type Forms struct {
@@ -258,7 +262,7 @@ func (Formsmodel FormModel) EditForm(id int, tenantid string, DB *gorm.DB) (Form
 
 func (Formsmodel FormModel) UpdateForm(tblforms *TblForm, DB *gorm.DB) error {
 
-	if err := DB.Table("tbl_forms").Where("id=? and tenant_id=?", &tblforms.Id, &tblforms.TenantId).UpdateColumns(map[string]interface{}{"form_title": &tblforms.FormTitle, "form_slug": &tblforms.FormSlug, "form_data": &tblforms.FormData, "status": &tblforms.Status, "modified_by": &tblforms.ModifiedBy, "modified_on": &tblforms.ModifiedOn, "channel_name": &tblforms.ChannelName, "channel_id": &tblforms.ChannelId, "form_preview_imagepath": &tblforms.FormPreviewImagepath, "form_preview_imagename": &tblforms.FormPreviewImagename}).Error; err != nil {
+	if err := DB.Table("tbl_forms").Where("id=? and tenant_id=?", &tblforms.Id, &tblforms.TenantId).UpdateColumns(map[string]interface{}{"form_title": &tblforms.FormTitle, "form_slug": &tblforms.FormSlug, "form_data": &tblforms.FormData, "status": &tblforms.Status, "modified_by": &tblforms.ModifiedBy, "modified_on": &tblforms.ModifiedOn, "channel_name": &tblforms.ChannelName, "channel_id": &tblforms.ChannelId, "form_preview_imagepath": &tblforms.FormPreviewImagepath, "form_preview_imagename": &tblforms.FormPreviewImagename, "form_description": &tblforms.FormDescription, "image_name": &tblforms.ImageName, "image_path": &tblforms.ImagePath}).Error; err != nil {
 
 		return err
 	}
@@ -329,6 +333,24 @@ func (Formsmodel FormModel) OverallResponseList(offset int, limit int, tenantid 
 	query.Find(&ResponseList).Count(&Count)
 
 	return ResponseList, Count, nil
+}
+
+func (Formsmodel FormModel) ResponseDetail(ticket string, tenantid string, DB *gorm.DB) (*TblFormResponses, error) {
+
+	var response TblFormResponses
+
+	result := DB.Table("tbl_form_responses").
+		Select("tbl_form_responses.*,tbl_forms.form_title as form_title").
+		Joins("INNER JOIN tbl_forms ON tbl_form_responses.form_id = tbl_forms.id").
+		Where("tbl_form_responses.ticket=? and tbl_form_responses.tenant_id = ?", ticket, tenantid).
+		First(&response)
+
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return &response, nil
+
 }
 
 func (Formsmodel FormModel) ReplyforResponse(ticket string, htmlcontent string, tenantid string, DB *gorm.DB) (bool, error) {
