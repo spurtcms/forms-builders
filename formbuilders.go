@@ -520,7 +520,7 @@ func (forms *Formbuilders) GetCtaById(ctaid int) (form TblForm, err error) {
 
 }
 
-func (forms *Formbuilders) OverAllFormResponses(Limit int, offset int, tenantid string) (ResponseList []TblFormResponses, count int64, err error) {
+func (forms *Formbuilders) OverAllFormResponses(Limit int, offset int, filter Filter, tenantid string) (ResponseList []TblFormResponses, count int64, err error) {
 
 	if AuthErr := AuthandPermission(forms); AuthErr != nil {
 
@@ -528,9 +528,9 @@ func (forms *Formbuilders) OverAllFormResponses(Limit int, offset int, tenantid 
 
 	}
 
-	response, _, err := Formsmodel.OverallResponseList(offset, Limit, tenantid, forms.DB)
+	response, _, err := Formsmodel.OverallResponseList(offset, Limit, filter, tenantid, forms.DB)
 
-	_, count, err = Formsmodel.OverallResponseList(0, 0, tenantid, forms.DB)
+	_, count, err = Formsmodel.OverallResponseList(0, 0, filter, tenantid, forms.DB)
 
 	if err != nil {
 
@@ -560,7 +560,7 @@ func (forms *Formbuilders) ResponseDetail(ticket string, TenantId string) (*TblF
 
 }
 
-func (forms *Formbuilders) ReplyForResponses(ticket string, htmlcontent string, TenantId string) (bool, error) {
+func (forms *Formbuilders) ReplyForResponses(replycontent TblReplyForResponse) (bool, error) {
 
 	if AuthErr := AuthandPermission(forms); AuthErr != nil {
 
@@ -568,12 +568,30 @@ func (forms *Formbuilders) ReplyForResponses(ticket string, htmlcontent string, 
 
 	}
 
-	status, err := Formsmodel.ReplyforResponse(ticket, htmlcontent, TenantId, forms.DB)
+	status, err := Formsmodel.ReplyforResponse(&replycontent, forms.DB)
 	if err != nil {
 
 		return false, err
 
 	}
 	return status, nil
+
+}
+
+func (forms *Formbuilders) ReplyForResponseList(ticket string, TenantId string) ([]TblReplyForResponse, error) {
+
+	if AuthErr := AuthandPermission(forms); AuthErr != nil {
+
+		return nil, AuthErr
+
+	}
+
+	response, err := Formsmodel.ReplyforResponseList(ticket, TenantId, forms.DB)
+	if err != nil {
+
+		return nil, err
+
+	}
+	return response, nil
 
 }

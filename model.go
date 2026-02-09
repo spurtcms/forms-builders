@@ -116,8 +116,20 @@ type TblFormResponses struct {
 	EntryId      int           `gorm:"type:integer"`
 }
 
+type TblReplyForResponse struct {
+	Id           int           `gorm:"primaryKey;auto_increment;type:serial"`
+	Ticket       string        `gorm:"type:character varying"`
+	Reply        string        `gorm:"type:character varying"`
+	CreatedBy    int           `gorm:"type:integer"`
+	CreatedOn    time.Time     `gorm:"type:timestamp without time zone;DEFAULT:NULL"`
+	TenantId     string        `gorm:"type:character varying"`
+	DateString   string        `gorm:"-"`
+	Replycontent template.HTML `gorm:"-"`
+}
+
 type Filter struct {
 	Keyword     string
+	TicketNo    string
 	FromDate    string
 	ToDate      string
 	ChannelSlug string
@@ -315,14 +327,26 @@ func (Formsmodel FormModel) CreateResponse(response *TblFormResponse, DB *gorm.D
 }
 
 // Form OverallResponseList
-func (Formsmodel FormModel) OverallResponseList(offset int, limit int, tenantid string, DB *gorm.DB) (ResponseList []TblFormResponses, Count int64, err error) {
+func (Formsmodel FormModel) OverallResponseList(offset int, limit int, filter Filter, tenantid string, DB *gorm.DB) (ResponseList []TblFormResponses, Count int64, err error) {
 
 	query := DB.Debug().
 		Table("tbl_form_responses").
 		Select("tbl_form_responses.*,tbl_forms.form_title as form_title").
 		Joins("INNER JOIN tbl_forms ON tbl_form_responses.form_id = tbl_forms.id").
-		Where("tbl_form_responses.tenant_id = ?", tenantid).
+		Where("tbl_form_responses.tenant_id = ? and tbl_form_responses.is_deleted=0", tenantid).
 		Order("tbl_form_responses.created_on desc")
+
+	if filter.Keyword != "" {
+		query = query.Where("Lower(TRIM(tbl_forms.form_title)) LIKE LOWER(TRIM(?))", "%"+filter.Keyword+"%")
+	}
+
+	if filter.TicketNo != "" {
+		query = query.Where("Lower(TRIM(tbl_form_responses.ticket)) LIKE LOWER(TRIM(?))", "%"+filter.TicketNo+"%")
+	}
+
+	if filter.FromDate != "" {
+		query = query.Where("tbl_form_responses.created_on >= ? AND tbl_form_responses.created_on <= ?", filter.FromDate, filter.ToDate+" 23:59:59")
+	}
 
 	if limit != 0 {
 		query.Limit(limit).Offset(offset).Find(&ResponseList)
@@ -353,9 +377,9 @@ func (Formsmodel FormModel) ResponseDetail(ticket string, tenantid string, DB *g
 
 }
 
-func (Formsmodel FormModel) ReplyforResponse(ticket string, htmlcontent string, tenantid string, DB *gorm.DB) (bool, error) {
+func (Formsmodel FormModel) ReplyforResponse(replycontent *TblReplyForResponse, DB *gorm.DB) (bool, error) {
 
-	result := DB.Table("tbl_form_responses").Where("ticket=? and tenant_id=?", ticket, tenantid).UpdateColumn("reply", htmlcontent)
+	result := DB.Table("tbl_reply_for_responses").Create(&replycontent)
 
 	if result.Error != nil {
 		return false, result.Error
@@ -363,6 +387,22 @@ func (Formsmodel FormModel) ReplyforResponse(ticket string, htmlcontent string, 
 
 	// true = updated, false = no rows matched
 	return result.RowsAffected > 0, nil
+
+}
+
+func (Formsmodel FormModel) ReplyforResponseList(ticket string, tenantid string, DB *gorm.DB) ([]TblReplyForResponse, error) {
+
+	var response []TblReplyForResponse
+
+	result := DB.Table("tbl_reply_for_responses").
+		Where("ticket=? and tenant_id = ?", ticket, tenantid).
+		Find(&response)
+
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return response, nil
 
 }
 
