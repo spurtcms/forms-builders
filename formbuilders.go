@@ -341,8 +341,6 @@ func (forms *Formbuilders) CreateFormResponse(response TblFormResponse) error {
 
 	Response.Ticket = response.Ticket
 
-	Response.Email = response.Email
-
 	err := Formsmodel.CreateResponse(&Response, forms.DB)
 	if err != nil {
 
@@ -593,5 +591,23 @@ func (forms *Formbuilders) ReplyForResponseList(ticket string, TenantId string) 
 
 	}
 	return response, nil
+
+}
+
+func (forms *Formbuilders) Closeticket(ticket string, TenantId string) (bool, error) {
+
+	if AuthErr := AuthandPermission(forms); AuthErr != nil {
+
+		return false, AuthErr
+
+	}
+
+	status, err := Formsmodel.CloseTicket(ticket, TenantId, forms.DB)
+	if err != nil {
+
+		return false, err
+
+	}
+	return status, nil
 
 }

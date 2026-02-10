@@ -83,7 +83,6 @@ type TblFormResponse struct {
 	Id           int       `gorm:"primaryKey;auto_increment;type:serial"`
 	FormId       int       `gorm:"type:integer;"`
 	FormResponse string    `gorm:"type:character varying"`
-	Email        string    `gorm:"type:character varying"`
 	UserId       int       `gorm:"type:integer;"`
 	IsActive     int       `gorm:"type:integer"`
 	IsDeleted    int       `gorm:"type:integer;DEFAULT:0"`
@@ -92,7 +91,7 @@ type TblFormResponse struct {
 	TenantId     string    `gorm:"type:character varying"`
 	Name         string    `gorm:"type:character varying"`
 	Ticket       string    `gorm:"type:character varying"`
-	Reply        string    `gorm:"type:character varying"`
+	CloseTicket  int       `gorm:"type:integer;DEFAULT:0"`
 	EntryId      int       `gorm:"type:integer"`
 }
 
@@ -100,7 +99,6 @@ type TblFormResponses struct {
 	Id           int           `gorm:"primaryKey;auto_increment;type:serial"`
 	FormId       int           `gorm:"type:integer;"`
 	FormResponse string        `gorm:"type:character varying"`
-	Email        string        `gorm:"type:character varying"`
 	UserId       int           `gorm:"type:integer;"`
 	IsActive     int           `gorm:"type:integer"`
 	IsDeleted    int           `gorm:"type:integer;DEFAULT:0"`
@@ -109,7 +107,7 @@ type TblFormResponses struct {
 	TenantId     string        `gorm:"type:character varying"`
 	Name         string        `gorm:"type:character varying"`
 	Ticket       string        `gorm:"type:character varying"`
-	Reply        string        `gorm:"type:character varying"`
+	CloseTicket  int           `gorm:"type:integer;DEFAULT:0"`
 	Replycontent template.HTML `gorm:"-"`
 	DateString   string        `gorm:"-"`
 	FormTitle    string        `gorm:"column:form_title" json:"form_title"`
@@ -396,6 +394,7 @@ func (Formsmodel FormModel) ReplyforResponseList(ticket string, tenantid string,
 
 	result := DB.Table("tbl_reply_for_responses").
 		Where("ticket=? and tenant_id = ?", ticket, tenantid).
+		Order("tbl_reply_for_responses.created_on desc").
 		Find(&response)
 
 	if result.Error != nil {
@@ -403,6 +402,20 @@ func (Formsmodel FormModel) ReplyforResponseList(ticket string, tenantid string,
 	}
 
 	return response, nil
+
+}
+
+func (Formsmodel FormModel) CloseTicket(ticket string, tenantid string, DB *gorm.DB) (bool, error) {
+
+	result := DB.Table("tbl_form_responses").
+		Where("ticket=? and tenant_id = ?", ticket, tenantid).
+		UpdateColumn("close_ticket", 1)
+
+	if result.Error != nil {
+		return false, result.Error
+	}
+
+	return true, nil
 
 }
 
