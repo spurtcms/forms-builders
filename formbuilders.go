@@ -101,6 +101,13 @@ func (forms *Formbuilders) CreateForms(tblform TblForm) (TblForm, error) {
 
 	Forms.ImagePath = tblform.ImagePath
 
+	// added by karthikeyan
+
+	Forms.FormSlug = tblform.FormSlug
+	Forms.MetaTitle = tblform.MetaTitle
+	Forms.MetaDescription = tblform.MetaDescription
+	Forms.Keywords = tblform.Keywords
+
 	formdetails, err := Formsmodel.CreateForm(&Forms, forms.DB)
 	if err != nil {
 
@@ -222,6 +229,11 @@ func (forms *Formbuilders) UpdateForms(tblforms TblForm, tenantid string) error 
 	Forms.ImageName = tblforms.ImageName
 
 	Forms.ImagePath = tblforms.ImagePath
+
+	Forms.FormSlug = tblforms.FormSlug
+	Forms.MetaTitle = tblforms.MetaTitle
+	Forms.MetaDescription = tblforms.MetaDescription
+	Forms.Keywords = tblforms.Keywords
 
 	err := Formsmodel.UpdateForm(&Forms, forms.DB)
 	if err != nil {

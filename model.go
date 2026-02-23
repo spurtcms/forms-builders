@@ -13,7 +13,7 @@ import (
 type TblForm struct {
 	Id                   int       `gorm:"primaryKey;auto_increment;type:serial"`
 	FormTitle            string    `gorm:"type:character varying"`
-	FormSlug             string    `gorm:"type:character varying"`
+	FormSlug             string    `gorm:"type:character varying"` //use
 	FormData             string    `gorm:"type:character varying"`
 	Status               int       `gorm:"type:integer"`
 	IsActive             int       `gorm:"type:integer"`
@@ -34,6 +34,10 @@ type TblForm struct {
 	FormPreviewImagename string    `gorm:"type:character varying"`
 	ImageName            string    `gorm:"type:character varying"`
 	ImagePath            string    `gorm:"type:character varying"`
+	// karthi
+	MetaTitle       string `gorm:"type:character varying"`
+	MetaDescription string `gorm:"type:character varying"`
+	Keywords        string `gorm:"type:character varying"`
 }
 
 type TblForms struct {
@@ -69,6 +73,10 @@ type TblForms struct {
 	FormPreviewImagename string    `gorm:"type:character varying"`
 	ImageName            string    `gorm:"type:character varying"`
 	ImagePath            string    `gorm:"type:character varying"`
+	// karthi
+	MetaTitle       string `gorm:"type:character varying"`
+	MetaDescription string `gorm:"type:character varying"`
+	Keywords        string `gorm:"type:character varying"`
 }
 
 type Forms struct {
@@ -272,7 +280,7 @@ func (Formsmodel FormModel) EditForm(id int, tenantid string, DB *gorm.DB) (Form
 
 func (Formsmodel FormModel) UpdateForm(tblforms *TblForm, DB *gorm.DB) error {
 
-	if err := DB.Table("tbl_forms").Where("id=? and tenant_id=?", &tblforms.Id, &tblforms.TenantId).UpdateColumns(map[string]interface{}{"form_title": &tblforms.FormTitle, "form_slug": &tblforms.FormSlug, "form_data": &tblforms.FormData, "status": &tblforms.Status, "modified_by": &tblforms.ModifiedBy, "modified_on": &tblforms.ModifiedOn, "channel_name": &tblforms.ChannelName, "channel_id": &tblforms.ChannelId, "form_preview_imagepath": &tblforms.FormPreviewImagepath, "form_preview_imagename": &tblforms.FormPreviewImagename, "form_description": &tblforms.FormDescription, "image_name": &tblforms.ImageName, "image_path": &tblforms.ImagePath}).Error; err != nil {
+	if err := DB.Table("tbl_forms").Where("id=? and tenant_id=?", &tblforms.Id, &tblforms.TenantId).UpdateColumns(map[string]interface{}{"form_title": &tblforms.FormTitle, "form_slug": &tblforms.FormSlug, "form_data": &tblforms.FormData, "status": &tblforms.Status, "modified_by": &tblforms.ModifiedBy, "modified_on": &tblforms.ModifiedOn, "channel_name": &tblforms.ChannelName, "channel_id": &tblforms.ChannelId, "form_preview_imagepath": &tblforms.FormPreviewImagepath, "form_preview_imagename": &tblforms.FormPreviewImagename, "form_description": &tblforms.FormDescription, "image_name": &tblforms.ImageName, "image_path": &tblforms.ImagePath, "meta_title": &tblforms.MetaTitle, "meta_description": &tblforms.MetaDescription, "keywords": &tblforms.Keywords}).Error; err != nil {
 
 		return err
 	}
