@@ -107,6 +107,10 @@ func (forms *Formbuilders) CreateForms(tblform TblForm) (TblForm, error) {
 	Forms.MetaTitle = tblform.MetaTitle
 	Forms.MetaDescription = tblform.MetaDescription
 	Forms.Keywords = tblform.Keywords
+	Forms.Recaptcha = tblform.Recaptcha
+	Forms.OnScreen = tblform.OnScreen
+	Forms.EmailContent = tblform.EmailContent
+	Forms.SmtpProtection = tblform.SmtpProtection
 
 	formdetails, err := Formsmodel.CreateForm(&Forms, forms.DB)
 	if err != nil {
@@ -234,6 +238,10 @@ func (forms *Formbuilders) UpdateForms(tblforms TblForm, tenantid string) error 
 	Forms.MetaTitle = tblforms.MetaTitle
 	Forms.MetaDescription = tblforms.MetaDescription
 	Forms.Keywords = tblforms.Keywords
+	Forms.Recaptcha = tblforms.Recaptcha
+	Forms.OnScreen = tblforms.OnScreen
+	Forms.EmailContent = tblforms.EmailContent
+	Forms.SmtpProtection = tblforms.SmtpProtection
 
 	err := Formsmodel.UpdateForm(&Forms, forms.DB)
 	if err != nil {

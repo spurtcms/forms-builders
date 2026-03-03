@@ -39,7 +39,7 @@ type TblForm struct {
 	MetaTitle       string            `gorm:"type:character varying"`
 	MetaDescription string            `gorm:"type:character varying"`
 	Keywords        string            `gorm:"type:character varying"`
-	Recaptcha       string            `gorm:"type:character varying"`
+	Recaptcha       int               `gorm:"type:integer;DEFAULT:NULL"`
 	OnScreen        datatypes.JSONMap `gorm:"type:jsonb"`
 	EmailContent    datatypes.JSONMap `gorm:"type:jsonb"`
 	SmtpProtection  datatypes.JSONMap `gorm:"type:jsonb"`
@@ -82,7 +82,7 @@ type TblForms struct {
 	MetaTitle       string            `gorm:"type:character varying"`
 	MetaDescription string            `gorm:"type:character varying"`
 	Keywords        string            `gorm:"type:character varying"`
-	Recaptcha       string            `gorm:"type:character varying"`
+	Recaptcha       int               `gorm:"type:integer;DEFAULT:NULL"`
 	OnScreen        datatypes.JSONMap `gorm:"type:jsonb"`
 	EmailContent    datatypes.JSONMap `gorm:"type:jsonb"`
 	SmtpProtection  datatypes.JSONMap `gorm:"type:jsonb"`
@@ -289,7 +289,7 @@ func (Formsmodel FormModel) EditForm(id int, tenantid string, DB *gorm.DB) (Form
 
 func (Formsmodel FormModel) UpdateForm(tblforms *TblForm, DB *gorm.DB) error {
 
-	if err := DB.Table("tbl_forms").Where("id=? and tenant_id=?", &tblforms.Id, &tblforms.TenantId).UpdateColumns(map[string]interface{}{"form_title": &tblforms.FormTitle, "form_slug": &tblforms.FormSlug, "form_data": &tblforms.FormData, "status": &tblforms.Status, "modified_by": &tblforms.ModifiedBy, "modified_on": &tblforms.ModifiedOn, "channel_name": &tblforms.ChannelName, "channel_id": &tblforms.ChannelId, "form_preview_imagepath": &tblforms.FormPreviewImagepath, "form_preview_imagename": &tblforms.FormPreviewImagename, "form_description": &tblforms.FormDescription, "image_name": &tblforms.ImageName, "image_path": &tblforms.ImagePath, "meta_title": &tblforms.MetaTitle, "meta_description": &tblforms.MetaDescription, "keywords": &tblforms.Keywords}).Error; err != nil {
+	if err := DB.Table("tbl_forms").Where("id=? and tenant_id=?", &tblforms.Id, &tblforms.TenantId).UpdateColumns(map[string]interface{}{"form_title": &tblforms.FormTitle, "form_slug": &tblforms.FormSlug, "form_data": &tblforms.FormData, "status": &tblforms.Status, "modified_by": &tblforms.ModifiedBy, "modified_on": &tblforms.ModifiedOn, "channel_name": &tblforms.ChannelName, "channel_id": &tblforms.ChannelId, "form_preview_imagepath": &tblforms.FormPreviewImagepath, "form_preview_imagename": &tblforms.FormPreviewImagename, "form_description": &tblforms.FormDescription, "image_name": &tblforms.ImageName, "image_path": &tblforms.ImagePath, "meta_title": &tblforms.MetaTitle, "meta_description": &tblforms.MetaDescription, "keywords": &tblforms.Keywords, "on_screen": &tblforms.OnScreen, "email_content": &tblforms.EmailContent, "smtp_protection": &tblforms.SmtpProtection}).Error; err != nil {
 
 		return err
 	}
