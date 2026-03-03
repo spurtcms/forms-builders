@@ -6,8 +6,8 @@ import (
 	"strings"
 	"time"
 
-	"gorm.io/gorm"
 	"gorm.io/datatypes"
+	"gorm.io/gorm"
 )
 
 // Create Forms
@@ -36,9 +36,13 @@ type TblForm struct {
 	ImageName            string    `gorm:"type:character varying"`
 	ImagePath            string    `gorm:"type:character varying"`
 	// karthi
-	MetaTitle       string `gorm:"type:character varying"`
-	MetaDescription string `gorm:"type:character varying"`
-	Keywords        string `gorm:"type:character varying"`
+	MetaTitle       string            `gorm:"type:character varying"`
+	MetaDescription string            `gorm:"type:character varying"`
+	Keywords        string            `gorm:"type:character varying"`
+	Recaptcha       string            `gorm:"type:character varying"`
+	OnScreen        datatypes.JSONMap `gorm:"type:jsonb"`
+	EmailContent    datatypes.JSONMap `gorm:"type:jsonb"`
+	SmtpProtection  datatypes.JSONMap `gorm:"type:jsonb"`
 }
 
 type TblForms struct {
@@ -75,9 +79,13 @@ type TblForms struct {
 	ImageName            string    `gorm:"type:character varying"`
 	ImagePath            string    `gorm:"type:character varying"`
 	// karthi
-	MetaTitle       string `gorm:"type:character varying"`
-	MetaDescription string `gorm:"type:character varying"`
-	Keywords        string `gorm:"type:character varying"`
+	MetaTitle       string            `gorm:"type:character varying"`
+	MetaDescription string            `gorm:"type:character varying"`
+	Keywords        string            `gorm:"type:character varying"`
+	Recaptcha       string            `gorm:"type:character varying"`
+	OnScreen        datatypes.JSONMap `gorm:"type:jsonb"`
+	EmailContent    datatypes.JSONMap `gorm:"type:jsonb"`
+	SmtpProtection  datatypes.JSONMap `gorm:"type:jsonb"`
 }
 
 type Forms struct {
