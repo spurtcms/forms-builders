@@ -514,3 +514,21 @@ func (Formsmodel FormModel) GetCtaById(forms *TblForm, DB *gorm.DB, id int) (err
 
 	return nil
 }
+
+func (Formsmodel FormModel) GetFormResponses(formId int, forms *[]TblFormResponses, DB *gorm.DB) (err error) {
+
+	// Join tbl_form_responses with tbl_forms to get form_title
+	if err = DB.Debug().
+		Table("tbl_form_responses as r").
+		Select("r.*, f.form_title").
+		Joins("left join tbl_forms as f on r.form_id = f.id").
+		Where("r.form_id = ? AND r.is_deleted = ?", formId, 0).
+		Order("r.id DESC").
+		Find(forms).Error; err != nil {
+
+		return err
+
+	}
+
+	return nil
+}

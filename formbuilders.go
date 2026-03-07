@@ -631,3 +631,22 @@ func (forms *Formbuilders) Closeticket(ticket string, TenantId string) (bool, er
 	return status, nil
 
 }
+
+func (forms *Formbuilders) GetFormResponses(formId int, tenantId string) ([]TblFormResponses, error) {
+
+	// Check permissions
+	if authErr := AuthandPermission(forms); authErr != nil {
+		return nil, authErr
+	}
+
+	// Prepare a slice to hold responses
+	var responses []TblFormResponses
+
+	// Call the model method to fetch responses
+	if err := Formsmodel.GetFormResponses(formId, &responses, forms.DB); err != nil {
+		return nil, err
+	}
+
+	// Return the fetched responses
+	return responses, nil
+}
