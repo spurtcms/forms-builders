@@ -614,15 +614,34 @@ func (forms *Formbuilders) ReplyForResponseList(ticket string, TenantId string) 
 
 }
 
-func (forms *Formbuilders) Closeticket(ticket string, TenantId string) (bool, error) {
+func (forms *Formbuilders) Closeticket(ticket string, TenantId string, notes string, ModifiedOn time.Time) (bool, error) {
 
 	if AuthErr := AuthandPermission(forms); AuthErr != nil {
 
 		return false, AuthErr
 
 	}
+	fmt.Println("npotest sd :", notes)
+	status, err := Formsmodel.CloseTicket(ticket, TenantId, forms.DB, notes, ModifiedOn)
+	if err != nil {
 
-	status, err := Formsmodel.CloseTicket(ticket, TenantId, forms.DB)
+		return false, err
+
+	}
+	return status, nil
+
+}
+
+// ticket reopen
+func (forms *Formbuilders) Reopenticket(ticketstatus string, TenantId string, ModifiedOn time.Time) (bool, error) {
+
+	if AuthErr := AuthandPermission(forms); AuthErr != nil {
+
+		return false, AuthErr
+
+	}
+	fmt.Println("ticketstatusticketstatusticketstatus", ticketstatus)
+	status, err := Formsmodel.ReopenTicket(ticketstatus, TenantId, forms.DB, ModifiedOn)
 	if err != nil {
 
 		return false, err

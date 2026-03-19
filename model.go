@@ -422,13 +422,34 @@ func (Formsmodel FormModel) ReplyforResponseList(ticket string, tenantid string,
 
 }
 
-func (Formsmodel FormModel) CloseTicket(ticket string, tenantid string, DB *gorm.DB) (bool, error) {
-
+func (Formsmodel FormModel) CloseTicket(ticket string, tenantid string, DB *gorm.DB, notes string, ModifiedOn time.Time) (bool, error) {
 	result := DB.Table("tbl_form_responses").
 		Where("ticket=? and tenant_id = ?", ticket, tenantid).
-		UpdateColumn("close_ticket", 1)
+		Updates(map[string]interface{}{
+			"close_ticket": 1,
+			"notes":        notes, // ✅ new column
+			"modified_on":  ModifiedOn,
+		})
 
 	if result.Error != nil {
+		fmt.Println("notesnotesnotesnotes :", result.Error)
+		return false, result.Error
+	}
+
+	return true, nil
+
+}
+
+func (Formsmodel FormModel) ReopenTicket(ticket string, tenantid string, DB *gorm.DB, ModifiedOn time.Time) (bool, error) {
+	result := DB.Table("tbl_form_responses").
+		Where("ticket=? and tenant_id = ?", ticket, tenantid).
+		Updates(map[string]interface{}{
+			"close_ticket": 0,
+			"modified_on":  ModifiedOn,
+		})
+
+	if result.Error != nil {
+		fmt.Println("notesnotesnotesnotes :", result.Error)
 		return false, result.Error
 	}
 
