@@ -129,6 +129,7 @@ type TblFormResponses struct {
 	DateString   string        `gorm:"-"`
 	FormTitle    string        `gorm:"column:form_title" json:"form_title"`
 	EntryId      int           `gorm:"type:integer"`
+	Notes        string        `gorm:"type:character varying"`
 }
 
 type TblReplyForResponse struct {
