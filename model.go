@@ -114,23 +114,25 @@ type TblFormResponse struct {
 }
 
 type TblFormResponses struct {
-	Id           int           `gorm:"primaryKey;auto_increment;type:serial"`
-	FormId       int           `gorm:"type:integer;"`
-	FormResponse string        `gorm:"type:character varying"`
-	UserId       int           `gorm:"type:integer;"`
-	IsActive     int           `gorm:"type:integer"`
-	IsDeleted    int           `gorm:"type:integer;DEFAULT:0"`
-	CreatedBy    int           `gorm:"type:integer"`
-	CreatedOn    time.Time     `gorm:"type:timestamp without time zone;DEFAULT:NULL"`
-	TenantId     string        `gorm:"type:character varying"`
-	Name         string        `gorm:"type:character varying"`
-	Ticket       string        `gorm:"type:character varying"`
-	CloseTicket  int           `gorm:"type:integer;DEFAULT:0"`
-	Replycontent template.HTML `gorm:"-"`
-	DateString   string        `gorm:"-"`
-	FormTitle    string        `gorm:"column:form_title" json:"form_title"`
-	EntryId      int           `gorm:"type:integer"`
-	Notes        string        `gorm:"type:character varying"`
+	Id                   int           `gorm:"primaryKey;auto_increment;type:serial"`
+	FormId               int           `gorm:"type:integer;"`
+	FormResponse         string        `gorm:"type:character varying"`
+	UserId               int           `gorm:"type:integer;"`
+	IsActive             int           `gorm:"type:integer"`
+	IsDeleted            int           `gorm:"type:integer;DEFAULT:0"`
+	CreatedBy            int           `gorm:"type:integer"`
+	CreatedOn            time.Time     `gorm:"type:timestamp without time zone;DEFAULT:NULL"`
+	ModifiedOn           time.Time     `gorm:"type:timestamp without time zone;DEFAULT:NULL"`
+	TenantId             string        `gorm:"type:character varying"`
+	Name                 string        `gorm:"type:character varying"`
+	Ticket               string        `gorm:"type:character varying"`
+	CloseTicket          int           `gorm:"type:integer;DEFAULT:0"`
+	Replycontent         template.HTML `gorm:"-"`
+	DateString           string        `gorm:"-"`
+	ModifiedOnDateString string        `gorm:"-"`
+	FormTitle            string        `gorm:"column:form_title" json:"form_title"`
+	EntryId              int           `gorm:"type:integer"`
+	Notes                string        `gorm:"type:character varying"`
 }
 
 type TblReplyForResponse struct {
