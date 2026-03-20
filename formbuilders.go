@@ -353,6 +353,8 @@ func (forms *Formbuilders) CreateFormResponse(response TblFormResponse) error {
 
 	Response.CreatedOn, _ = time.Parse("2006-01-02 15:04:05", time.Now().UTC().Format("2006-01-02 15:04:05"))
 
+	Response.ModifiedOn, _ = time.Parse("2006-01-02 15:04:05", time.Now().UTC().Format("2006-01-02 15:04:05"))
+
 	Response.TenantId = response.TenantId
 
 	Response.EntryId = response.EntryId
@@ -614,15 +616,14 @@ func (forms *Formbuilders) ReplyForResponseList(ticket string, TenantId string) 
 
 }
 
-func (forms *Formbuilders) Closeticket(ticket string, TenantId string, notes string, ModifiedOn time.Time) (bool, error) {
+func (forms *Formbuilders) Closeticket(ticket string, TenantId string) (bool, error) {
 
 	if AuthErr := AuthandPermission(forms); AuthErr != nil {
 
 		return false, AuthErr
 
 	}
-	fmt.Println("npotest sd :", notes)
-	status, err := Formsmodel.CloseTicket(ticket, TenantId, forms.DB, notes, ModifiedOn)
+	status, err := Formsmodel.CloseTicket(ticket, TenantId, forms.DB)
 	if err != nil {
 
 		return false, err
@@ -640,8 +641,24 @@ func (forms *Formbuilders) Reopenticket(ticketstatus string, TenantId string, Mo
 		return false, AuthErr
 
 	}
-	fmt.Println("ticketstatusticketstatusticketstatus", ticketstatus)
 	status, err := Formsmodel.ReopenTicket(ticketstatus, TenantId, forms.DB, ModifiedOn)
+	if err != nil {
+
+		return false, err
+
+	}
+	return status, nil
+
+}
+
+func (forms *Formbuilders) TicketNotes(ticket string, TenantId string, notes string, modifiedOn time.Time) (bool, error) {
+	fmt.Println("notesnotesnotesnotes :", notes)
+	if AuthErr := AuthandPermission(forms); AuthErr != nil {
+
+		return false, AuthErr
+
+	}
+	status, err := Formsmodel.TicketNotes(ticket, TenantId, forms.DB, notes, modifiedOn)
 	if err != nil {
 
 		return false, err

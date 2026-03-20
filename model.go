@@ -105,6 +105,7 @@ type TblFormResponse struct {
 	IsDeleted    int       `gorm:"type:integer;DEFAULT:0"`
 	CreatedBy    int       `gorm:"type:integer"`
 	CreatedOn    time.Time `gorm:"type:timestamp without time zone;DEFAULT:NULL"`
+	ModifiedOn   time.Time `gorm:"type:timestamp without time zone;DEFAULT:NULL"`
 	TenantId     string    `gorm:"type:character varying"`
 	Name         string    `gorm:"type:character varying"`
 	Ticket       string    `gorm:"type:character varying"`
@@ -423,13 +424,11 @@ func (Formsmodel FormModel) ReplyforResponseList(ticket string, tenantid string,
 
 }
 
-func (Formsmodel FormModel) CloseTicket(ticket string, tenantid string, DB *gorm.DB, notes string, ModifiedOn time.Time) (bool, error) {
+func (Formsmodel FormModel) CloseTicket(ticket string, tenantid string, DB *gorm.DB) (bool, error) {
 	result := DB.Table("tbl_form_responses").
 		Where("ticket=? and tenant_id = ?", ticket, tenantid).
 		Updates(map[string]interface{}{
 			"close_ticket": 1,
-			"notes":        notes, // ✅ new column
-			"modified_on":  ModifiedOn,
 		})
 
 	if result.Error != nil {
@@ -450,7 +449,24 @@ func (Formsmodel FormModel) ReopenTicket(ticket string, tenantid string, DB *gor
 		})
 
 	if result.Error != nil {
-		fmt.Println("notesnotesnotesnotes :", result.Error)
+		fmt.Println("Error :", result.Error)
+		return false, result.Error
+	}
+
+	return true, nil
+
+}
+
+func (Formsmodel FormModel) TicketNotes(ticket string, tenantid string, DB *gorm.DB, notes string, modifiedOn time.Time) (bool, error) {
+	result := DB.Table("tbl_form_responses").
+		Where("ticket=? and tenant_id = ?", ticket, tenantid).
+		Updates(map[string]interface{}{
+			"notes":       notes,
+			"modified_on": modifiedOn,
+		})
+
+	if result.Error != nil {
+		fmt.Println("Error :", result.Error)
 		return false, result.Error
 	}
 
