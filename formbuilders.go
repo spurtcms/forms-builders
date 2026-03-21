@@ -616,14 +616,14 @@ func (forms *Formbuilders) ReplyForResponseList(ticket string, TenantId string) 
 
 }
 
-func (forms *Formbuilders) Closeticket(ticket string, TenantId string) (bool, error) {
+func (forms *Formbuilders) Closeticket(ticket string, TenantId string, notes string, modifiedon time.Time) (bool, error) {
 
 	if AuthErr := AuthandPermission(forms); AuthErr != nil {
 
 		return false, AuthErr
 
 	}
-	status, err := Formsmodel.CloseTicket(ticket, TenantId, forms.DB)
+	status, err := Formsmodel.CloseTicket(ticket, TenantId, forms.DB, notes , modifiedon)
 	if err != nil {
 
 		return false, err

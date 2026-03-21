@@ -426,11 +426,13 @@ func (Formsmodel FormModel) ReplyforResponseList(ticket string, tenantid string,
 
 }
 
-func (Formsmodel FormModel) CloseTicket(ticket string, tenantid string, DB *gorm.DB) (bool, error) {
+func (Formsmodel FormModel) CloseTicket(ticket string, tenantid string, DB *gorm.DB, notes string, modifiedon time.Time) (bool, error) {
 	result := DB.Table("tbl_form_responses").
 		Where("ticket=? and tenant_id = ?", ticket, tenantid).
 		Updates(map[string]interface{}{
 			"close_ticket": 1,
+			"notes":        notes,
+			"modified_on":  modifiedon,
 		})
 
 	if result.Error != nil {
