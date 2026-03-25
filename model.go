@@ -436,7 +436,7 @@ func (Formsmodel FormModel) CloseTicket(ticket string, tenantid string, DB *gorm
 		})
 
 	if result.Error != nil {
-		fmt.Println("notesnotesnotesnotes :", result.Error)
+		fmt.Println("notes :", result.Error)
 		return false, result.Error
 	}
 
@@ -570,6 +570,18 @@ func (Formsmodel FormModel) GetFormResponses(formId int, forms *[]TblFormRespons
 
 		return err
 
+	}
+
+	return nil
+}
+func (Formsmodel FormModel) GetFormDetailById(formId int, form *TblForms, DB *gorm.DB) error {
+
+	err := DB.Table("tbl_forms").
+		Where("id = ?", formId).
+		First(&form).Error
+
+	if err != nil {
+		return err
 	}
 
 	return nil

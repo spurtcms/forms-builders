@@ -623,7 +623,7 @@ func (forms *Formbuilders) Closeticket(ticket string, TenantId string, notes str
 		return false, AuthErr
 
 	}
-	status, err := Formsmodel.CloseTicket(ticket, TenantId, forms.DB, notes , modifiedon)
+	status, err := Formsmodel.CloseTicket(ticket, TenantId, forms.DB, notes, modifiedon)
 	if err != nil {
 
 		return false, err
@@ -685,4 +685,22 @@ func (forms *Formbuilders) GetFormResponses(formId int, tenantId string) ([]TblF
 
 	// Return the fetched responses
 	return responses, nil
+}
+func (forms *Formbuilders) GetFormById(formId int, tenantId string) (TblForms, error) {
+
+	// Check permissions
+	if authErr := AuthandPermission(forms); authErr != nil {
+		return TblForms{}, authErr
+	}
+
+	// Prepare a slice to hold responses
+	var form TblForms
+
+	// Call the model method to fetch responses
+	if err := Formsmodel.GetFormDetailById(formId, &form, forms.DB); err != nil {
+		return TblForms{}, err
+	}
+
+	// Return the fetched responses
+	return form, nil
 }
