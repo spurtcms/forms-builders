@@ -173,11 +173,10 @@ func (Formsmodel FormModel) FormsList(offset int, limit int, filter Filter, DB *
 		Select("tbl_forms.*, tbl_users.username,tbl_users.first_name,tbl_users.last_name, tbl_users.profile_image_path").
 		Joins("inner join tbl_users on tbl_forms.created_by=tbl_users.id").
 		Where("tbl_forms.is_deleted = 0 ").
-		Order("tbl_forms.modified_on desc")
+		Order("tbl_forms.id desc")
 
 	if status == 3 {
-
-		query = query.Where("tbl_forms.status=? and tbl_forms.is_active=?", 1, 1)
+		query = query.Where("tbl_forms.is_active=?", 1)
 	} else {
 
 		query = query.Where("tbl_forms.status=? ", status)
